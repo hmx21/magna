@@ -34,8 +34,7 @@ The TQD tasks call their authors' decoder, which is not distributed here;
 
 ## Documentation
 
-The user manual is in `docs/software/`; preview it with `./scripts/serve_docs.py`
-(creates `build/docs-venv`, opens `http://localhost:8000/`, reloads on edit).
+[User manual](https://itpyi.github.io/magna/)
 
 - [Overview](docs/software/index.md), [installation](docs/software/install.md) and [tutorial](docs/software/getting-started.md)
 - [Concepts](docs/software/concepts.md): what is exact, what is sampled, and how results are defined

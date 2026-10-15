@@ -1,4 +1,6 @@
 site_name: magna
+site_url: https://itpyi.github.io/magna/
+repo_url: https://github.com/itpyi/magna
 site_description: Exact evaluation of noisy non-Clifford quantum protocols with classical feedback.
 docs_dir: docs/software
 site_dir: build/software-docs
