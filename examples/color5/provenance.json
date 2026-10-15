@@ -1,0 +1,40 @@
+{
+  "source": {
+    "source": "Wan and Zapirain, Exact logical error rates for magic state cultivation, arXiv:2609.18922v2, Table 1",
+    "url": "https://arxiv.org/html/2609.18922v2#S1.T1",
+    "circuit_url": "https://github.com/unitaryfoundation/clifft/blob/main/tests/fixtures/cultivation_d5.stim",
+    "circuit_source_sha256": "859d925c74712efaae8bab1d944f9e5be4e042e226eeafcc6d7bef9d6fbfbae5",
+    "rows": [
+      {
+        "p": 0.0005,
+        "acceptance": 0.379184137167,
+        "conditional_error": 2.846165501072e-10
+      },
+      {
+        "p": 0.00075,
+        "acceptance": 0.233599896243,
+        "conditional_error": 1.165527889094e-09
+      },
+      {
+        "p": 0.001,
+        "acceptance": 0.143955584096,
+        "conditional_error": 3.328425371418e-09
+      },
+      {
+        "p": 0.0015,
+        "acceptance": 0.0547199749366,
+        "conditional_error": 1.59126680653e-08
+      },
+      {
+        "p": 0.002,
+        "acceptance": 0.0208263641922,
+        "conditional_error": 5.175102366142e-08
+      }
+    ]
+  },
+  "adaptations": [
+    "Rescale common physical probability 0.005 to 0.001 only.",
+    "Task accepts all original 107 detectors and scores the original final logical observable."
+  ],
+  "kernel_revision": "ba3c861e50377dcee67dba215da8d5828a922d9a"
+}

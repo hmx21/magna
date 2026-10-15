@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "outputs": [
+    3
+  ],
+  "observables": [
+    [
+      0,
+      1
+    ]
+  ],
+  "ideal_state": "zero_target.magna"
+}

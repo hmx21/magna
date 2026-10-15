@@ -1,0 +1,2 @@
+# Physical error model: this probability is never replaced in the target model.
+X_ERROR(1/1000) 0

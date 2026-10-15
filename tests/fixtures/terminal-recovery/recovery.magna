@@ -1,0 +1,8 @@
+# Local wires 0,1,2 are the selected physical output.
+MPP Z0*Z1 Z1*Z2
+DETECTOR rec[-2]
+DETECTOR rec[-1]
+CONTROL[repetition] det[-2] det[-1] -> ctrl[0] ctrl[1] ctrl[2]
+CX ctrl[0] 0
+CX ctrl[1] 1
+CX ctrl[2] 2

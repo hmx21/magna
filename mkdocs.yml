@@ -1,0 +1,39 @@
+site_name: magna
+site_description: Exact evaluation of noisy non-Clifford quantum protocols with classical feedback.
+docs_dir: docs/software
+site_dir: build/software-docs
+use_directory_urls: true
+theme:
+  name: readthedocs
+nav:
+  - Overview: index.md
+  - Installation: install.md
+  - Tutorial: getting-started.md
+  - Concepts: concepts.md
+  - User guide:
+      - Circuit files: circuit-format.md
+      - Noise: noise.md
+      - Classical feedback and decoders: controllers.md
+      - Tasks and targets: tasks.md
+      - Running and reading results: results.md
+      - Sampling methods: sampling.md
+      - Exact enumeration: enumeration.md
+  - Reference:
+      - Command line: cli.md
+      - Python API: api.md
+      - Resource options and failures: options.md
+      - Schemas: schemas.md
+  - Examples:
+      - Overview: examples.md
+      - RP² cultivation: example-rp2.md
+      - Magic-state distillation: example-distillation15.md
+      - TQD memory: example-tqd.md
+  - How it works:
+      - Overview: architecture/index.md
+      - Compilation and sampling: architecture/compiler.md
+      - Operation-level API: architecture/operations.md
+      - Exact values: architecture/values.md
+markdown_extensions:
+  - fenced_code
+  - tables
+strict: true

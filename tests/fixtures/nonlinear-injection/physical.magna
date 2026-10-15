@@ -1,0 +1,13 @@
+# Data q0 starts in |+>; injection ancilla q1 starts in T|+>.
+H 0 1
+T 1
+CX 0 1
+# Repeated nondestructive readout, with independent report flips only.
+REPEAT 3 {
+    M(0.01) 1
+}
+DETECTOR rec[-3]
+DETECTOR rec[-2]
+DETECTOR rec[-1]
+CONTROL[majority] det[-3] det[-2] det[-1] -> ctrl[0]
+CS ctrl[0] 0

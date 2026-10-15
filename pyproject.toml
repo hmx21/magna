@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "magna-quantum"
+version = "0.1.0"
+description = "magna: Magic-state-factory Assessment via Global Network Algebra"
+readme = "docs/software/index.md"
+license = "MPL-2.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+docs = ["mkdocs==1.6.1"]
+
+[project.scripts]
+magna = "magna.file_api:main"
+
+[tool.setuptools]
+package-dir = {"" = "core"}
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["core"]
+include = ["magna*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+magna = ["data/*.json"]

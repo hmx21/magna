@@ -1,0 +1,13 @@
+{
+  "outputs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "ideal_state": "ideal.magna",
+  "recovery": "recovery.magna"
+}

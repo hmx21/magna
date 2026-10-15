@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "bindings": {
+    "jit_b_0": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 1,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_g_0": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 1,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_r_0": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 1,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_b_1": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 2,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_g_1": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 2,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_r_1": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 2,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_b_2": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 3,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_g_2": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 3,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_r_2": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 3,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_b_3": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 4,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_g_3": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 4,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_r_3": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 4,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_b_4": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 5,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_g_4": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 5,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "jit_r_4": {
+      "import": "decoder.decoder:decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 5,
+        "step": 5,
+        "revision": "d4f0918c841bb4dde632dd5010425a28f4c0e43f"
+      }
+    },
+    "charge_b": {
+      "import": "decoder.decoder:charge_decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 6
+      }
+    },
+    "charge_g": {
+      "import": "decoder.decoder:charge_decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 6
+      }
+    },
+    "charge_r": {
+      "import": "decoder.decoder:charge_decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3,
+        "depth": 6
+      }
+    },
+    "exit": {
+      "import": "decoder.decoder:exit_decode",
+      "version": "physical-2-d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "config": {
+        "size": 3
+      }
+    }
+  }
+}

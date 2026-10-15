@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "bindings": {
+    "gauge": {
+      "import": "decoder.decoder:decode",
+      "version": "1",
+      "config": {
+        "distance": 3,
+        "mode": "gauge"
+      }
+    },
+    "ideal_input_recovery": {
+      "import": "decoder.decoder:decode",
+      "version": "1",
+      "config": {
+        "distance": 3,
+        "mode": "ideal_recovery"
+      }
+    },
+    "readout_Z": {
+      "import": "decoder.decoder:decode",
+      "version": "1",
+      "config": {
+        "distance": 3,
+        "mode": "readout",
+        "basis": "Z"
+      }
+    },
+    "readout_X": {
+      "import": "decoder.decoder:decode",
+      "version": "1",
+      "config": {
+        "distance": 3,
+        "mode": "readout",
+        "basis": "X"
+      }
+    }
+  }
+}

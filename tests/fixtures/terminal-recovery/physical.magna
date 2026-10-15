@@ -1,0 +1,6 @@
+# Deterministic physical X fault: a small reproducible recovery example.
+H 0
+T 0
+CX 0 1
+CX 0 2
+X_ERROR(1) 1

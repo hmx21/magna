@@ -1,0 +1,17 @@
+{
+  "circuit": "physical.magna",
+  "task": "branch-0.task.json",
+  "shots": 1024,
+  "seed": 20261008,
+  "options": {
+    "max_path_bits": 65536,
+    "max_doubled_path_bits": 131072,
+    "max_quotient_rank": 12,
+    "max_terms": 4096,
+    "history_sampler": "affine_support"
+  },
+  "sampling": {
+    "method": "physical"
+  },
+  "controllers": "controllers.json"
+}

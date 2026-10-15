@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "bindings": {
+    "majority": {
+      "import": "magna_example_decoders:majority",
+      "version": "1.0",
+      "config": {}
+    }
+  }
+}

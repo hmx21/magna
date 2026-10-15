@@ -1,0 +1,1359 @@
+{
+  "size": 3,
+  "depth": 5,
+  "px": ".01",
+  "pz": ".01",
+  "noise_window": "author",
+  "records": [
+    {
+      "record": 0,
+      "label": "entrance.A.g.0.0"
+    },
+    {
+      "record": 1,
+      "label": "entrance.A.g.1.0"
+    },
+    {
+      "record": 2,
+      "label": "entrance.A.g.2.0"
+    },
+    {
+      "record": 3,
+      "label": "entrance.A.g.0.1"
+    },
+    {
+      "record": 4,
+      "label": "entrance.A.g.1.1"
+    },
+    {
+      "record": 5,
+      "label": "entrance.A.g.2.1"
+    },
+    {
+      "record": 6,
+      "label": "entrance.A.g.0.2"
+    },
+    {
+      "record": 7,
+      "label": "entrance.A.g.1.2"
+    },
+    {
+      "record": 8,
+      "label": "entrance.A.g.2.2"
+    },
+    {
+      "record": 9,
+      "label": "memory.0.B.b.0.0"
+    },
+    {
+      "record": 10,
+      "label": "memory.0.B.b.1.0"
+    },
+    {
+      "record": 11,
+      "label": "memory.0.B.b.2.0"
+    },
+    {
+      "record": 12,
+      "label": "memory.0.B.b.0.1"
+    },
+    {
+      "record": 13,
+      "label": "memory.0.B.b.1.1"
+    },
+    {
+      "record": 14,
+      "label": "memory.0.B.b.2.1"
+    },
+    {
+      "record": 15,
+      "label": "memory.0.B.b.0.2"
+    },
+    {
+      "record": 16,
+      "label": "memory.0.B.b.1.2"
+    },
+    {
+      "record": 17,
+      "label": "memory.0.B.b.2.2"
+    },
+    {
+      "record": 18,
+      "label": "memory.0.A.b.0.0"
+    },
+    {
+      "record": 19,
+      "label": "memory.0.A.b.1.0"
+    },
+    {
+      "record": 20,
+      "label": "memory.0.A.b.2.0"
+    },
+    {
+      "record": 21,
+      "label": "memory.0.A.b.0.1"
+    },
+    {
+      "record": 22,
+      "label": "memory.0.A.b.1.1"
+    },
+    {
+      "record": 23,
+      "label": "memory.0.A.b.2.1"
+    },
+    {
+      "record": 24,
+      "label": "memory.0.A.b.0.2"
+    },
+    {
+      "record": 25,
+      "label": "memory.0.A.b.1.2"
+    },
+    {
+      "record": 26,
+      "label": "memory.0.A.b.2.2"
+    },
+    {
+      "record": 27,
+      "label": "memory.0.B.g.0.0"
+    },
+    {
+      "record": 28,
+      "label": "memory.0.B.g.1.0"
+    },
+    {
+      "record": 29,
+      "label": "memory.0.B.g.2.0"
+    },
+    {
+      "record": 30,
+      "label": "memory.0.B.g.0.1"
+    },
+    {
+      "record": 31,
+      "label": "memory.0.B.g.1.1"
+    },
+    {
+      "record": 32,
+      "label": "memory.0.B.g.2.1"
+    },
+    {
+      "record": 33,
+      "label": "memory.0.B.g.0.2"
+    },
+    {
+      "record": 34,
+      "label": "memory.0.B.g.1.2"
+    },
+    {
+      "record": 35,
+      "label": "memory.0.B.g.2.2"
+    },
+    {
+      "record": 36,
+      "label": "memory.0.A.g.0.0"
+    },
+    {
+      "record": 37,
+      "label": "memory.0.A.g.1.0"
+    },
+    {
+      "record": 38,
+      "label": "memory.0.A.g.2.0"
+    },
+    {
+      "record": 39,
+      "label": "memory.0.A.g.0.1"
+    },
+    {
+      "record": 40,
+      "label": "memory.0.A.g.1.1"
+    },
+    {
+      "record": 41,
+      "label": "memory.0.A.g.2.1"
+    },
+    {
+      "record": 42,
+      "label": "memory.0.A.g.0.2"
+    },
+    {
+      "record": 43,
+      "label": "memory.0.A.g.1.2"
+    },
+    {
+      "record": 44,
+      "label": "memory.0.A.g.2.2"
+    },
+    {
+      "record": 45,
+      "label": "memory.0.B.r.0.0"
+    },
+    {
+      "record": 46,
+      "label": "memory.0.B.r.1.0"
+    },
+    {
+      "record": 47,
+      "label": "memory.0.B.r.2.0"
+    },
+    {
+      "record": 48,
+      "label": "memory.0.B.r.0.1"
+    },
+    {
+      "record": 49,
+      "label": "memory.0.B.r.1.1"
+    },
+    {
+      "record": 50,
+      "label": "memory.0.B.r.2.1"
+    },
+    {
+      "record": 51,
+      "label": "memory.0.B.r.0.2"
+    },
+    {
+      "record": 52,
+      "label": "memory.0.B.r.1.2"
+    },
+    {
+      "record": 53,
+      "label": "memory.0.B.r.2.2"
+    },
+    {
+      "record": 54,
+      "label": "memory.0.A.r.0.0"
+    },
+    {
+      "record": 55,
+      "label": "memory.0.A.r.1.0"
+    },
+    {
+      "record": 56,
+      "label": "memory.0.A.r.2.0"
+    },
+    {
+      "record": 57,
+      "label": "memory.0.A.r.0.1"
+    },
+    {
+      "record": 58,
+      "label": "memory.0.A.r.1.1"
+    },
+    {
+      "record": 59,
+      "label": "memory.0.A.r.2.1"
+    },
+    {
+      "record": 60,
+      "label": "memory.0.A.r.0.2"
+    },
+    {
+      "record": 61,
+      "label": "memory.0.A.r.1.2"
+    },
+    {
+      "record": 62,
+      "label": "memory.0.A.r.2.2"
+    },
+    {
+      "record": 63,
+      "label": "memory.1.B.b.0.0"
+    },
+    {
+      "record": 64,
+      "label": "memory.1.B.b.1.0"
+    },
+    {
+      "record": 65,
+      "label": "memory.1.B.b.2.0"
+    },
+    {
+      "record": 66,
+      "label": "memory.1.B.b.0.1"
+    },
+    {
+      "record": 67,
+      "label": "memory.1.B.b.1.1"
+    },
+    {
+      "record": 68,
+      "label": "memory.1.B.b.2.1"
+    },
+    {
+      "record": 69,
+      "label": "memory.1.B.b.0.2"
+    },
+    {
+      "record": 70,
+      "label": "memory.1.B.b.1.2"
+    },
+    {
+      "record": 71,
+      "label": "memory.1.B.b.2.2"
+    },
+    {
+      "record": 72,
+      "label": "memory.1.A.b.0.0"
+    },
+    {
+      "record": 73,
+      "label": "memory.1.A.b.1.0"
+    },
+    {
+      "record": 74,
+      "label": "memory.1.A.b.2.0"
+    },
+    {
+      "record": 75,
+      "label": "memory.1.A.b.0.1"
+    },
+    {
+      "record": 76,
+      "label": "memory.1.A.b.1.1"
+    },
+    {
+      "record": 77,
+      "label": "memory.1.A.b.2.1"
+    },
+    {
+      "record": 78,
+      "label": "memory.1.A.b.0.2"
+    },
+    {
+      "record": 79,
+      "label": "memory.1.A.b.1.2"
+    },
+    {
+      "record": 80,
+      "label": "memory.1.A.b.2.2"
+    },
+    {
+      "record": 81,
+      "label": "memory.1.B.g.0.0"
+    },
+    {
+      "record": 82,
+      "label": "memory.1.B.g.1.0"
+    },
+    {
+      "record": 83,
+      "label": "memory.1.B.g.2.0"
+    },
+    {
+      "record": 84,
+      "label": "memory.1.B.g.0.1"
+    },
+    {
+      "record": 85,
+      "label": "memory.1.B.g.1.1"
+    },
+    {
+      "record": 86,
+      "label": "memory.1.B.g.2.1"
+    },
+    {
+      "record": 87,
+      "label": "memory.1.B.g.0.2"
+    },
+    {
+      "record": 88,
+      "label": "memory.1.B.g.1.2"
+    },
+    {
+      "record": 89,
+      "label": "memory.1.B.g.2.2"
+    },
+    {
+      "record": 90,
+      "label": "memory.1.A.g.0.0"
+    },
+    {
+      "record": 91,
+      "label": "memory.1.A.g.1.0"
+    },
+    {
+      "record": 92,
+      "label": "memory.1.A.g.2.0"
+    },
+    {
+      "record": 93,
+      "label": "memory.1.A.g.0.1"
+    },
+    {
+      "record": 94,
+      "label": "memory.1.A.g.1.1"
+    },
+    {
+      "record": 95,
+      "label": "memory.1.A.g.2.1"
+    },
+    {
+      "record": 96,
+      "label": "memory.1.A.g.0.2"
+    },
+    {
+      "record": 97,
+      "label": "memory.1.A.g.1.2"
+    },
+    {
+      "record": 98,
+      "label": "memory.1.A.g.2.2"
+    },
+    {
+      "record": 99,
+      "label": "memory.1.B.r.0.0"
+    },
+    {
+      "record": 100,
+      "label": "memory.1.B.r.1.0"
+    },
+    {
+      "record": 101,
+      "label": "memory.1.B.r.2.0"
+    },
+    {
+      "record": 102,
+      "label": "memory.1.B.r.0.1"
+    },
+    {
+      "record": 103,
+      "label": "memory.1.B.r.1.1"
+    },
+    {
+      "record": 104,
+      "label": "memory.1.B.r.2.1"
+    },
+    {
+      "record": 105,
+      "label": "memory.1.B.r.0.2"
+    },
+    {
+      "record": 106,
+      "label": "memory.1.B.r.1.2"
+    },
+    {
+      "record": 107,
+      "label": "memory.1.B.r.2.2"
+    },
+    {
+      "record": 108,
+      "label": "memory.1.A.r.0.0"
+    },
+    {
+      "record": 109,
+      "label": "memory.1.A.r.1.0"
+    },
+    {
+      "record": 110,
+      "label": "memory.1.A.r.2.0"
+    },
+    {
+      "record": 111,
+      "label": "memory.1.A.r.0.1"
+    },
+    {
+      "record": 112,
+      "label": "memory.1.A.r.1.1"
+    },
+    {
+      "record": 113,
+      "label": "memory.1.A.r.2.1"
+    },
+    {
+      "record": 114,
+      "label": "memory.1.A.r.0.2"
+    },
+    {
+      "record": 115,
+      "label": "memory.1.A.r.1.2"
+    },
+    {
+      "record": 116,
+      "label": "memory.1.A.r.2.2"
+    },
+    {
+      "record": 117,
+      "label": "memory.2.B.b.0.0"
+    },
+    {
+      "record": 118,
+      "label": "memory.2.B.b.1.0"
+    },
+    {
+      "record": 119,
+      "label": "memory.2.B.b.2.0"
+    },
+    {
+      "record": 120,
+      "label": "memory.2.B.b.0.1"
+    },
+    {
+      "record": 121,
+      "label": "memory.2.B.b.1.1"
+    },
+    {
+      "record": 122,
+      "label": "memory.2.B.b.2.1"
+    },
+    {
+      "record": 123,
+      "label": "memory.2.B.b.0.2"
+    },
+    {
+      "record": 124,
+      "label": "memory.2.B.b.1.2"
+    },
+    {
+      "record": 125,
+      "label": "memory.2.B.b.2.2"
+    },
+    {
+      "record": 126,
+      "label": "memory.2.A.b.0.0"
+    },
+    {
+      "record": 127,
+      "label": "memory.2.A.b.1.0"
+    },
+    {
+      "record": 128,
+      "label": "memory.2.A.b.2.0"
+    },
+    {
+      "record": 129,
+      "label": "memory.2.A.b.0.1"
+    },
+    {
+      "record": 130,
+      "label": "memory.2.A.b.1.1"
+    },
+    {
+      "record": 131,
+      "label": "memory.2.A.b.2.1"
+    },
+    {
+      "record": 132,
+      "label": "memory.2.A.b.0.2"
+    },
+    {
+      "record": 133,
+      "label": "memory.2.A.b.1.2"
+    },
+    {
+      "record": 134,
+      "label": "memory.2.A.b.2.2"
+    },
+    {
+      "record": 135,
+      "label": "memory.2.B.g.0.0"
+    },
+    {
+      "record": 136,
+      "label": "memory.2.B.g.1.0"
+    },
+    {
+      "record": 137,
+      "label": "memory.2.B.g.2.0"
+    },
+    {
+      "record": 138,
+      "label": "memory.2.B.g.0.1"
+    },
+    {
+      "record": 139,
+      "label": "memory.2.B.g.1.1"
+    },
+    {
+      "record": 140,
+      "label": "memory.2.B.g.2.1"
+    },
+    {
+      "record": 141,
+      "label": "memory.2.B.g.0.2"
+    },
+    {
+      "record": 142,
+      "label": "memory.2.B.g.1.2"
+    },
+    {
+      "record": 143,
+      "label": "memory.2.B.g.2.2"
+    },
+    {
+      "record": 144,
+      "label": "memory.2.A.g.0.0"
+    },
+    {
+      "record": 145,
+      "label": "memory.2.A.g.1.0"
+    },
+    {
+      "record": 146,
+      "label": "memory.2.A.g.2.0"
+    },
+    {
+      "record": 147,
+      "label": "memory.2.A.g.0.1"
+    },
+    {
+      "record": 148,
+      "label": "memory.2.A.g.1.1"
+    },
+    {
+      "record": 149,
+      "label": "memory.2.A.g.2.1"
+    },
+    {
+      "record": 150,
+      "label": "memory.2.A.g.0.2"
+    },
+    {
+      "record": 151,
+      "label": "memory.2.A.g.1.2"
+    },
+    {
+      "record": 152,
+      "label": "memory.2.A.g.2.2"
+    },
+    {
+      "record": 153,
+      "label": "memory.2.B.r.0.0"
+    },
+    {
+      "record": 154,
+      "label": "memory.2.B.r.1.0"
+    },
+    {
+      "record": 155,
+      "label": "memory.2.B.r.2.0"
+    },
+    {
+      "record": 156,
+      "label": "memory.2.B.r.0.1"
+    },
+    {
+      "record": 157,
+      "label": "memory.2.B.r.1.1"
+    },
+    {
+      "record": 158,
+      "label": "memory.2.B.r.2.1"
+    },
+    {
+      "record": 159,
+      "label": "memory.2.B.r.0.2"
+    },
+    {
+      "record": 160,
+      "label": "memory.2.B.r.1.2"
+    },
+    {
+      "record": 161,
+      "label": "memory.2.B.r.2.2"
+    },
+    {
+      "record": 162,
+      "label": "memory.2.A.r.0.0"
+    },
+    {
+      "record": 163,
+      "label": "memory.2.A.r.1.0"
+    },
+    {
+      "record": 164,
+      "label": "memory.2.A.r.2.0"
+    },
+    {
+      "record": 165,
+      "label": "memory.2.A.r.0.1"
+    },
+    {
+      "record": 166,
+      "label": "memory.2.A.r.1.1"
+    },
+    {
+      "record": 167,
+      "label": "memory.2.A.r.2.1"
+    },
+    {
+      "record": 168,
+      "label": "memory.2.A.r.0.2"
+    },
+    {
+      "record": 169,
+      "label": "memory.2.A.r.1.2"
+    },
+    {
+      "record": 170,
+      "label": "memory.2.A.r.2.2"
+    },
+    {
+      "record": 171,
+      "label": "memory.3.B.b.0.0"
+    },
+    {
+      "record": 172,
+      "label": "memory.3.B.b.1.0"
+    },
+    {
+      "record": 173,
+      "label": "memory.3.B.b.2.0"
+    },
+    {
+      "record": 174,
+      "label": "memory.3.B.b.0.1"
+    },
+    {
+      "record": 175,
+      "label": "memory.3.B.b.1.1"
+    },
+    {
+      "record": 176,
+      "label": "memory.3.B.b.2.1"
+    },
+    {
+      "record": 177,
+      "label": "memory.3.B.b.0.2"
+    },
+    {
+      "record": 178,
+      "label": "memory.3.B.b.1.2"
+    },
+    {
+      "record": 179,
+      "label": "memory.3.B.b.2.2"
+    },
+    {
+      "record": 180,
+      "label": "memory.3.A.b.0.0"
+    },
+    {
+      "record": 181,
+      "label": "memory.3.A.b.1.0"
+    },
+    {
+      "record": 182,
+      "label": "memory.3.A.b.2.0"
+    },
+    {
+      "record": 183,
+      "label": "memory.3.A.b.0.1"
+    },
+    {
+      "record": 184,
+      "label": "memory.3.A.b.1.1"
+    },
+    {
+      "record": 185,
+      "label": "memory.3.A.b.2.1"
+    },
+    {
+      "record": 186,
+      "label": "memory.3.A.b.0.2"
+    },
+    {
+      "record": 187,
+      "label": "memory.3.A.b.1.2"
+    },
+    {
+      "record": 188,
+      "label": "memory.3.A.b.2.2"
+    },
+    {
+      "record": 189,
+      "label": "memory.3.B.g.0.0"
+    },
+    {
+      "record": 190,
+      "label": "memory.3.B.g.1.0"
+    },
+    {
+      "record": 191,
+      "label": "memory.3.B.g.2.0"
+    },
+    {
+      "record": 192,
+      "label": "memory.3.B.g.0.1"
+    },
+    {
+      "record": 193,
+      "label": "memory.3.B.g.1.1"
+    },
+    {
+      "record": 194,
+      "label": "memory.3.B.g.2.1"
+    },
+    {
+      "record": 195,
+      "label": "memory.3.B.g.0.2"
+    },
+    {
+      "record": 196,
+      "label": "memory.3.B.g.1.2"
+    },
+    {
+      "record": 197,
+      "label": "memory.3.B.g.2.2"
+    },
+    {
+      "record": 198,
+      "label": "memory.3.A.g.0.0"
+    },
+    {
+      "record": 199,
+      "label": "memory.3.A.g.1.0"
+    },
+    {
+      "record": 200,
+      "label": "memory.3.A.g.2.0"
+    },
+    {
+      "record": 201,
+      "label": "memory.3.A.g.0.1"
+    },
+    {
+      "record": 202,
+      "label": "memory.3.A.g.1.1"
+    },
+    {
+      "record": 203,
+      "label": "memory.3.A.g.2.1"
+    },
+    {
+      "record": 204,
+      "label": "memory.3.A.g.0.2"
+    },
+    {
+      "record": 205,
+      "label": "memory.3.A.g.1.2"
+    },
+    {
+      "record": 206,
+      "label": "memory.3.A.g.2.2"
+    },
+    {
+      "record": 207,
+      "label": "memory.3.B.r.0.0"
+    },
+    {
+      "record": 208,
+      "label": "memory.3.B.r.1.0"
+    },
+    {
+      "record": 209,
+      "label": "memory.3.B.r.2.0"
+    },
+    {
+      "record": 210,
+      "label": "memory.3.B.r.0.1"
+    },
+    {
+      "record": 211,
+      "label": "memory.3.B.r.1.1"
+    },
+    {
+      "record": 212,
+      "label": "memory.3.B.r.2.1"
+    },
+    {
+      "record": 213,
+      "label": "memory.3.B.r.0.2"
+    },
+    {
+      "record": 214,
+      "label": "memory.3.B.r.1.2"
+    },
+    {
+      "record": 215,
+      "label": "memory.3.B.r.2.2"
+    },
+    {
+      "record": 216,
+      "label": "memory.3.A.r.0.0"
+    },
+    {
+      "record": 217,
+      "label": "memory.3.A.r.1.0"
+    },
+    {
+      "record": 218,
+      "label": "memory.3.A.r.2.0"
+    },
+    {
+      "record": 219,
+      "label": "memory.3.A.r.0.1"
+    },
+    {
+      "record": 220,
+      "label": "memory.3.A.r.1.1"
+    },
+    {
+      "record": 221,
+      "label": "memory.3.A.r.2.1"
+    },
+    {
+      "record": 222,
+      "label": "memory.3.A.r.0.2"
+    },
+    {
+      "record": 223,
+      "label": "memory.3.A.r.1.2"
+    },
+    {
+      "record": 224,
+      "label": "memory.3.A.r.2.2"
+    },
+    {
+      "record": 225,
+      "label": "memory.4.B.b.0.0"
+    },
+    {
+      "record": 226,
+      "label": "memory.4.B.b.1.0"
+    },
+    {
+      "record": 227,
+      "label": "memory.4.B.b.2.0"
+    },
+    {
+      "record": 228,
+      "label": "memory.4.B.b.0.1"
+    },
+    {
+      "record": 229,
+      "label": "memory.4.B.b.1.1"
+    },
+    {
+      "record": 230,
+      "label": "memory.4.B.b.2.1"
+    },
+    {
+      "record": 231,
+      "label": "memory.4.B.b.0.2"
+    },
+    {
+      "record": 232,
+      "label": "memory.4.B.b.1.2"
+    },
+    {
+      "record": 233,
+      "label": "memory.4.B.b.2.2"
+    },
+    {
+      "record": 234,
+      "label": "memory.4.A.b.0.0"
+    },
+    {
+      "record": 235,
+      "label": "memory.4.A.b.1.0"
+    },
+    {
+      "record": 236,
+      "label": "memory.4.A.b.2.0"
+    },
+    {
+      "record": 237,
+      "label": "memory.4.A.b.0.1"
+    },
+    {
+      "record": 238,
+      "label": "memory.4.A.b.1.1"
+    },
+    {
+      "record": 239,
+      "label": "memory.4.A.b.2.1"
+    },
+    {
+      "record": 240,
+      "label": "memory.4.A.b.0.2"
+    },
+    {
+      "record": 241,
+      "label": "memory.4.A.b.1.2"
+    },
+    {
+      "record": 242,
+      "label": "memory.4.A.b.2.2"
+    },
+    {
+      "record": 243,
+      "label": "memory.4.B.g.0.0"
+    },
+    {
+      "record": 244,
+      "label": "memory.4.B.g.1.0"
+    },
+    {
+      "record": 245,
+      "label": "memory.4.B.g.2.0"
+    },
+    {
+      "record": 246,
+      "label": "memory.4.B.g.0.1"
+    },
+    {
+      "record": 247,
+      "label": "memory.4.B.g.1.1"
+    },
+    {
+      "record": 248,
+      "label": "memory.4.B.g.2.1"
+    },
+    {
+      "record": 249,
+      "label": "memory.4.B.g.0.2"
+    },
+    {
+      "record": 250,
+      "label": "memory.4.B.g.1.2"
+    },
+    {
+      "record": 251,
+      "label": "memory.4.B.g.2.2"
+    },
+    {
+      "record": 252,
+      "label": "memory.4.A.g.0.0"
+    },
+    {
+      "record": 253,
+      "label": "memory.4.A.g.1.0"
+    },
+    {
+      "record": 254,
+      "label": "memory.4.A.g.2.0"
+    },
+    {
+      "record": 255,
+      "label": "memory.4.A.g.0.1"
+    },
+    {
+      "record": 256,
+      "label": "memory.4.A.g.1.1"
+    },
+    {
+      "record": 257,
+      "label": "memory.4.A.g.2.1"
+    },
+    {
+      "record": 258,
+      "label": "memory.4.A.g.0.2"
+    },
+    {
+      "record": 259,
+      "label": "memory.4.A.g.1.2"
+    },
+    {
+      "record": 260,
+      "label": "memory.4.A.g.2.2"
+    },
+    {
+      "record": 261,
+      "label": "memory.4.B.r.0.0"
+    },
+    {
+      "record": 262,
+      "label": "memory.4.B.r.1.0"
+    },
+    {
+      "record": 263,
+      "label": "memory.4.B.r.2.0"
+    },
+    {
+      "record": 264,
+      "label": "memory.4.B.r.0.1"
+    },
+    {
+      "record": 265,
+      "label": "memory.4.B.r.1.1"
+    },
+    {
+      "record": 266,
+      "label": "memory.4.B.r.2.1"
+    },
+    {
+      "record": 267,
+      "label": "memory.4.B.r.0.2"
+    },
+    {
+      "record": 268,
+      "label": "memory.4.B.r.1.2"
+    },
+    {
+      "record": 269,
+      "label": "memory.4.B.r.2.2"
+    },
+    {
+      "record": 270,
+      "label": "memory.4.A.r.0.0"
+    },
+    {
+      "record": 271,
+      "label": "memory.4.A.r.1.0"
+    },
+    {
+      "record": 272,
+      "label": "memory.4.A.r.2.0"
+    },
+    {
+      "record": 273,
+      "label": "memory.4.A.r.0.1"
+    },
+    {
+      "record": 274,
+      "label": "memory.4.A.r.1.1"
+    },
+    {
+      "record": 275,
+      "label": "memory.4.A.r.2.1"
+    },
+    {
+      "record": 276,
+      "label": "memory.4.A.r.0.2"
+    },
+    {
+      "record": 277,
+      "label": "memory.4.A.r.1.2"
+    },
+    {
+      "record": 278,
+      "label": "memory.4.A.r.2.2"
+    },
+    {
+      "record": 279,
+      "label": "terminal.A.b.0.0"
+    },
+    {
+      "record": 280,
+      "label": "terminal.A.b.1.0"
+    },
+    {
+      "record": 281,
+      "label": "terminal.A.b.2.0"
+    },
+    {
+      "record": 282,
+      "label": "terminal.A.b.0.1"
+    },
+    {
+      "record": 283,
+      "label": "terminal.A.b.1.1"
+    },
+    {
+      "record": 284,
+      "label": "terminal.A.b.2.1"
+    },
+    {
+      "record": 285,
+      "label": "terminal.A.b.0.2"
+    },
+    {
+      "record": 286,
+      "label": "terminal.A.b.1.2"
+    },
+    {
+      "record": 287,
+      "label": "terminal.A.b.2.2"
+    },
+    {
+      "record": 288,
+      "label": "terminal.A.g.0.0"
+    },
+    {
+      "record": 289,
+      "label": "terminal.A.g.1.0"
+    },
+    {
+      "record": 290,
+      "label": "terminal.A.g.2.0"
+    },
+    {
+      "record": 291,
+      "label": "terminal.A.g.0.1"
+    },
+    {
+      "record": 292,
+      "label": "terminal.A.g.1.1"
+    },
+    {
+      "record": 293,
+      "label": "terminal.A.g.2.1"
+    },
+    {
+      "record": 294,
+      "label": "terminal.A.g.0.2"
+    },
+    {
+      "record": 295,
+      "label": "terminal.A.g.1.2"
+    },
+    {
+      "record": 296,
+      "label": "terminal.A.g.2.2"
+    },
+    {
+      "record": 297,
+      "label": "terminal.A.r.0.0"
+    },
+    {
+      "record": 298,
+      "label": "terminal.A.r.1.0"
+    },
+    {
+      "record": 299,
+      "label": "terminal.A.r.2.0"
+    },
+    {
+      "record": 300,
+      "label": "terminal.A.r.0.1"
+    },
+    {
+      "record": 301,
+      "label": "terminal.A.r.1.1"
+    },
+    {
+      "record": 302,
+      "label": "terminal.A.r.2.1"
+    },
+    {
+      "record": 303,
+      "label": "terminal.A.r.0.2"
+    },
+    {
+      "record": 304,
+      "label": "terminal.A.r.1.2"
+    },
+    {
+      "record": 305,
+      "label": "terminal.A.r.2.2"
+    },
+    {
+      "record": 306,
+      "label": "exit.green.0.0.0"
+    },
+    {
+      "record": 307,
+      "label": "exit.green.0.0.1"
+    },
+    {
+      "record": 308,
+      "label": "exit.green.1.0.0"
+    },
+    {
+      "record": 309,
+      "label": "exit.green.1.0.1"
+    },
+    {
+      "record": 310,
+      "label": "exit.green.2.0.0"
+    },
+    {
+      "record": 311,
+      "label": "exit.green.2.0.1"
+    },
+    {
+      "record": 312,
+      "label": "exit.green.0.1.0"
+    },
+    {
+      "record": 313,
+      "label": "exit.green.0.1.1"
+    },
+    {
+      "record": 314,
+      "label": "exit.green.1.1.0"
+    },
+    {
+      "record": 315,
+      "label": "exit.green.1.1.1"
+    },
+    {
+      "record": 316,
+      "label": "exit.green.2.1.0"
+    },
+    {
+      "record": 317,
+      "label": "exit.green.2.1.1"
+    },
+    {
+      "record": 318,
+      "label": "exit.green.0.2.0"
+    },
+    {
+      "record": 319,
+      "label": "exit.green.0.2.1"
+    },
+    {
+      "record": 320,
+      "label": "exit.green.1.2.0"
+    },
+    {
+      "record": 321,
+      "label": "exit.green.1.2.1"
+    },
+    {
+      "record": 322,
+      "label": "exit.green.2.2.0"
+    },
+    {
+      "record": 323,
+      "label": "exit.green.2.2.1"
+    }
+  ],
+  "outputs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53
+  ],
+  "branch_target_norms": [
+    "5/8",
+    "3/8"
+  ],
+  "decoder_conventions": {
+    "exit": "rooted-tree gauge correction; residual edges retained",
+    "unmatchable_reported_parity": "no new matching correction"
+  },
+  "status": "complete deterministic classical actions; physical success evaluated from output",
+  "terminal_recovery": {
+    "kind": "noiseless-charge-round",
+    "rounds": 1,
+    "charge_depth": 6,
+    "memory_depth": 5,
+    "description": "Remeasure all A after the final three-color JIT corrections; append detector differences and run unchanged charge MWPM on the extended graph."
+  }
+}

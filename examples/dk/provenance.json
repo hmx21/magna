@@ -1,0 +1,64 @@
+{
+  "source": {
+    "source": "2410.07327v3",
+    "source_resolution": "Table IV p8 uses q12; Sec.IV.A q15 treated as typo",
+    "pair_relabeling": "Fig.2 geometry, preserving Fig.6 black/blue roles",
+    "noise_model": "DK eigenvalue flips; gate depolarization; no idle",
+    "correction": "ideal classical Pauli frame; no additional feedback gate noise"
+  },
+  "geometry": {
+    "n3": 15,
+    "n2": 7,
+    "x3": [
+      12771,
+      15480,
+      10062,
+      32640
+    ],
+    "z3": [
+      99,
+      78,
+      120,
+      1548,
+      3096,
+      6192,
+      22656,
+      12672,
+      9984,
+      15360
+    ],
+    "h2": [
+      99,
+      78,
+      120
+    ],
+    "logical2": 7,
+    "logical_x3": 127,
+    "logical_z3": 7,
+    "t_signs": [
+      1,
+      -1,
+      1,
+      -1,
+      1,
+      -1,
+      1,
+      -1,
+      1,
+      -1,
+      1,
+      -1,
+      1,
+      -1,
+      1
+    ]
+  },
+  "source_revision": "b1075f70786f26fd2f38ba9cc76372c7b5ecd98f",
+  "physical_circuit_unchanged_sha256": "ad6f7518e464aa05bd6fa3db1eb607ae37ffd5e26b76ce1fbf2687db72d64d7c",
+  "output_metric": "Full encoded T-state overlap after ideal six-syndrome CSS recovery.",
+  "decoder": "Separate unique weight-one X/Z corrections of the Steane Hamming code; all 64 syndromes have defined actions.",
+  "recovery_noise": "none",
+  "additional_postselection": "none",
+  "literature_difference": "Source Sec. V decodes destructive X and Y readouts separately; this experiment recovers a common quantum state before target overlap.",
+  "interface": "Existing recovery module and ControllerRegistry; no kernel or API change."
+}

@@ -1,0 +1,21 @@
+# Environments, caches and builds
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+/core/magna/_native*.so
+/core/magna/_native*.pyd
+/core/magna/native-build.json
+/core/magna/native-reference-build.json
+# Editor state and secrets
+.DS_Store
+._*
+*.swp
+.env
+.env.*
+!.env.example
+# Author decoder sources downloaded by scripts/fetch_author_decoder.py
+examples/*/decoder/author_source/*.py

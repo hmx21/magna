@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "bindings": {
+    "steane_css": {
+      "import": "decoder.decoder:decode",
+      "version": "hamming-ideal-v1",
+      "config": {}
+    }
+  }
+}

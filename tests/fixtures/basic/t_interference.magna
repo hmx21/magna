@@ -1,0 +1,9 @@
+# One fixed-input T interference experiment. The detector is a task annotation.
+R 0
+H 0
+T 0
+H 0
+M 0
+DETECTOR rec[-1]
+OBSERVABLE_INCLUDE(0) rec[-1]
+POSTSELECT det[0]

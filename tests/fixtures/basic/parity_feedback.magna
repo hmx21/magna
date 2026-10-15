@@ -1,0 +1,10 @@
+# Three reported measurements, one parity bit, and one physical correction.
+R 0 1 2 3
+H 0 1 2
+M 0 1 2
+CONTROL[XOR] rec[-3] rec[-2] rec[-1] -> ctrl[0]
+CX ctrl[0] 3
+X_ERROR(0.01) 3
+M 3
+DETECTOR rec[-4] rec[-3] rec[-2] rec[-1]
+POSTSELECT det[0]

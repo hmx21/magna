@@ -1,0 +1,548 @@
+H 0 1 2 3 4 5 6 7 8
+CX 0 26
+CX 1 27
+CX 2 28
+CX 3 29
+CX 4 30
+CX 5 31
+S 0
+S 1
+S 2
+S 3
+S 4
+S 5
+CX 25 24
+CX 25 23
+CX 25 22
+CX 25 21
+CX 25 20
+CX 25 19
+CX 25 18
+CX 25 17
+CX 25 16
+CX 25 15
+CX 25 14
+CX 25 12
+CX 25 9
+CX 25 8
+CX 25 7
+CX 25 6
+CX 25 5
+CX 24 25
+CX 24 22
+CX 24 20
+CX 24 18
+CX 24 16
+CX 24 14
+CX 24 13
+CX 24 12
+CX 24 11
+CX 24 7
+CX 24 4
+CX 24 3
+CX 24 2
+CX 24 1
+CX 24 0
+CX 22 25
+CX 22 23
+CX 22 21
+CX 22 20
+CX 22 19
+CX 22 18
+CX 22 17
+CX 22 16
+CX 22 15
+CX 22 14
+CX 22 11
+CX 22 10
+CX 22 7
+CX 22 6
+CX 22 5
+CX 22 4
+CX 21 24
+CX 21 23
+CX 21 19
+CX 21 17
+CX 21 15
+CX 21 13
+CX 21 11
+CX 21 9
+CX 21 8
+CX 21 6
+CX 21 5
+CX 21 4
+CX 21 3
+CX 21 2
+CX 21 1
+CX 21 0
+CX 20 24
+CX 20 23
+CX 20 21
+CX 20 19
+CX 20 17
+CX 20 15
+CX 20 13
+CX 20 12
+CX 20 10
+CX 20 6
+CX 20 5
+CX 20 4
+CX 20 3
+CX 20 1
+CX 20 0
+CX 23 19
+CX 19 23
+CX 23 19
+CX 18 25
+CX 18 23
+CX 18 22
+CX 18 20
+CX 18 17
+CX 18 16
+CX 18 15
+CX 18 14
+CX 18 11
+CX 18 10
+CX 18 7
+CX 18 6
+CX 18 5
+CX 18 4
+CX 18 3
+CX 18 2
+CX 19 18
+CX 18 19
+CX 19 18
+CX 17 16
+CX 17 12
+CX 17 11
+CX 17 10
+CX 17 9
+CX 17 8
+CX 17 0
+CX 20 17
+CX 17 20
+CX 20 17
+CX 16 20
+CX 16 12
+CX 16 11
+CX 16 10
+CX 16 9
+CX 16 8
+CX 16 0
+CX 17 16
+CX 16 17
+CX 17 16
+CX 15 24
+CX 15 23
+CX 15 21
+CX 15 18
+CX 15 17
+CX 15 13
+CX 15 11
+CX 15 9
+CX 15 8
+CX 15 6
+CX 15 5
+CX 15 4
+CX 15 3
+CX 15 2
+CX 15 1
+CX 15 0
+CX 20 14
+CX 14 20
+CX 20 14
+CX 13 25
+CX 13 24
+CX 13 23
+CX 13 22
+CX 13 21
+CX 13 20
+CX 13 19
+CX 13 18
+CX 13 17
+CX 13 16
+CX 13 15
+CX 13 14
+CX 13 10
+CX 13 9
+CX 13 8
+CX 13 7
+CX 12 25
+CX 12 24
+CX 12 11
+CX 12 10
+CX 12 9
+CX 12 8
+CX 12 5
+CX 23 12
+CX 12 23
+CX 23 12
+CX 11 25
+CX 11 24
+CX 11 23
+CX 11 10
+CX 11 9
+CX 11 8
+CX 11 5
+CX 14 11
+CX 11 14
+CX 14 11
+CX 10 25
+CX 10 24
+CX 10 23
+CX 10 14
+CX 10 9
+CX 10 8
+CX 10 5
+CX 11 10
+CX 10 11
+CX 11 10
+CX 17 9
+CX 9 17
+CX 17 9
+CX 8 25
+CX 8 24
+CX 8 23
+CX 8 17
+CX 8 14
+CX 8 11
+CX 8 5
+CX 7 25
+CX 7 22
+CX 7 20
+CX 7 19
+CX 7 16
+CX 7 13
+CX 7 11
+CX 7 10
+CX 7 8
+CX 7 6
+CX 7 5
+CX 7 4
+CX 7 3
+CX 7 2
+CX 7 1
+CX 7 0
+CX 6 24
+CX 6 21
+CX 6 20
+CX 6 18
+CX 6 15
+CX 6 14
+CX 6 12
+CX 6 9
+CX 6 8
+CX 6 5
+CX 6 4
+CX 6 3
+CX 6 2
+CX 6 1
+CX 6 0
+CX 7 6
+CX 6 7
+CX 7 6
+CX 5 25
+CX 5 24
+CX 5 23
+CX 5 22
+CX 5 21
+CX 5 4
+CX 20 5
+CX 5 20
+CX 20 5
+CX 4 22
+CX 4 21
+CX 4 20
+CX 4 19
+CX 4 18
+CX 4 3
+CX 17 4
+CX 4 17
+CX 17 4
+CX 3 19
+CX 3 18
+CX 3 17
+CX 3 16
+CX 3 15
+CX 3 2
+CX 14 3
+CX 3 14
+CX 14 3
+CX 2 16
+CX 2 15
+CX 2 14
+CX 2 13
+CX 2 12
+CX 2 1
+CX 11 2
+CX 2 11
+CX 11 2
+CX 1 13
+CX 1 12
+CX 1 11
+CX 1 10
+CX 1 9
+CX 1 0
+CX 8 1
+CX 1 8
+CX 8 1
+CX 0 10
+CX 0 9
+CX 0 8
+CX 0 7
+CX 0 6
+CX 0 5
+CX 4 0
+CX 0 4
+CX 4 0
+H 32
+T 32
+Z_ERROR(0.001) 32
+CX 32 0
+M 0
+CX rec[-1] 32
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 32
+S 32
+H 33
+T 33
+Z_ERROR(0.001) 33
+CX 33 1
+M 1
+CX rec[-1] 33
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 33
+S 33
+H 34
+T 34
+Z_ERROR(0.001) 34
+CX 34 2
+M 2
+CX rec[-1] 34
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 34
+S 34
+H 35
+T 35
+Z_ERROR(0.001) 35
+CX 35 3
+M 3
+CX rec[-1] 35
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 35
+S 35
+H 36
+T 36
+Z_ERROR(0.001) 36
+CX 36 4
+M 4
+CX rec[-1] 36
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 36
+S 36
+H 37
+T 37
+Z_ERROR(0.001) 37
+CX 37 5
+M 5
+CX rec[-1] 37
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 37
+S 37
+H 38
+T 38
+Z_ERROR(0.001) 38
+CX 38 6
+M 6
+CX rec[-1] 38
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 38
+S 38
+H 39
+T 39
+Z_ERROR(0.001) 39
+CX 39 7
+M 7
+CX rec[-1] 39
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 39
+S 39
+H 40
+T 40
+Z_ERROR(0.001) 40
+CX 40 8
+M 8
+CX rec[-1] 40
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 40
+S 40
+H 41
+T 41
+Z_ERROR(0.001) 41
+CX 41 9
+M 9
+CX rec[-1] 41
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 41
+S 41
+H 42
+T 42
+Z_ERROR(0.001) 42
+CX 42 10
+M 10
+CX rec[-1] 42
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 42
+S 42
+H 43
+T 43
+Z_ERROR(0.001) 43
+CX 43 11
+M 11
+CX rec[-1] 43
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 43
+S 43
+H 44
+T 44
+Z_ERROR(0.001) 44
+CX 44 12
+M 12
+CX rec[-1] 44
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 44
+S 44
+H 45
+T 45
+Z_ERROR(0.001) 45
+CX 45 13
+M 13
+CX rec[-1] 45
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 45
+S 45
+H 46
+T 46
+Z_ERROR(0.001) 46
+CX 46 14
+M 14
+CX rec[-1] 46
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 46
+S 46
+H 47
+T 47
+Z_ERROR(0.001) 47
+CX 47 15
+M 15
+CX rec[-1] 47
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 47
+S 47
+H 48
+T 48
+Z_ERROR(0.001) 48
+CX 48 16
+M 16
+CX rec[-1] 48
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 48
+S 48
+H 49
+T 49
+Z_ERROR(0.001) 49
+CX 49 17
+M 17
+CX rec[-1] 49
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 49
+S 49
+H 50
+T 50
+Z_ERROR(0.001) 50
+CX 50 18
+M 18
+CX rec[-1] 50
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 50
+S 50
+H 51
+T 51
+Z_ERROR(0.001) 51
+CX 51 19
+M 19
+CX rec[-1] 51
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 51
+S 51
+H 52
+T 52
+Z_ERROR(0.001) 52
+CX 52 20
+M 20
+CX rec[-1] 52
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 52
+S 52
+H 53
+T 53
+Z_ERROR(0.001) 53
+CX 53 21
+M 21
+CX rec[-1] 53
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 53
+S 53
+H 54
+T 54
+Z_ERROR(0.001) 54
+CX 54 22
+M 22
+CX rec[-1] 54
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 54
+S 54
+H 55
+T 55
+Z_ERROR(0.001) 55
+CX 55 23
+M 23
+CX rec[-1] 55
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 55
+S 55
+H 56
+T 56
+Z_ERROR(0.001) 56
+CX 56 24
+M 24
+CX rec[-1] 56
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 56
+S 56
+H 57
+T 57
+Z_ERROR(0.001) 57
+CX 57 25
+M 25
+CX rec[-1] 57
+CONTROL[XOR](1) rec[-1] -> ctrl[0]
+CS_DAG ctrl[0] 57
+S 57
+MX 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57
+DETECTOR rec[-25] rec[-23] rec[-21] rec[-19] rec[-18] rec[-16] rec[-15] rec[-13] rec[-12] rec[-10] rec[-9] rec[-7] rec[-6] rec[-4] rec[-3] rec[-1]
+DETECTOR rec[-24] rec[-23] rec[-20] rec[-19] rec[-17] rec[-16] rec[-14] rec[-13] rec[-11] rec[-10] rec[-8] rec[-7] rec[-5] rec[-4] rec[-2] rec[-1]
+DETECTOR rec[-26] rec[-25] rec[-24] rec[-23] rec[-22] rec[-21] rec[-20] rec[-19]
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-18] rec[-17] rec[-16] -> ctrl[1]
+CZ ctrl[1] 26
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-15] rec[-14] rec[-13] -> ctrl[2]
+CZ ctrl[2] 27
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-12] rec[-11] rec[-10] -> ctrl[3]
+CZ ctrl[3] 28
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-9] rec[-8] rec[-7] -> ctrl[4]
+CZ ctrl[4] 29
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-6] rec[-5] rec[-4] -> ctrl[5]
+CZ ctrl[5] 30
+CONTROL[XOR] rec[-22] rec[-21] rec[-20] rec[-19] rec[-3] rec[-2] rec[-1] -> ctrl[6]
+CZ ctrl[6] 31
+POSTSELECT det[0] det[1] det[2]

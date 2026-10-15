@@ -1,0 +1,99 @@
+{
+  "repository": "https://github.com/NoaFeldman/JustInTimeDecoding",
+  "retrieved_on": "2026-09-15",
+  "verified_at": "2026-09-15T12:26:23+08:00",
+  "mode": "read-only source inspection; author code neither imported nor executed",
+  "paper_version": "2604.02033v1",
+  "paper_generation_commit": "not identified; paper-era snapshot is not asserted to generate published figures",
+  "snapshots": [
+    {
+      "commit": "d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "commit_time": "2026-07-22T13:20:58Z",
+      "source_url": "https://codeload.github.com/NoaFeldman/JustInTimeDecoding/tar.gz/d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "directory": ".",
+      "archive": "source.tar.gz",
+      "archive_sha256": "31a7a3f96eee060bc2463a58c3c782b44b71813ce0ebb32d50a2813decb1a9ed"
+    },
+    {
+      "commit": "64c0e6075232319d5246862b4de758b4faf75521",
+      "commit_time": "2026-03-27T15:15:10Z",
+      "source_url": "https://codeload.github.com/NoaFeldman/JustInTimeDecoding/tar.gz/64c0e6075232319d5246862b4de758b4faf75521",
+      "directory": "paper-era",
+      "archive": "paper-era-source.tar.gz",
+      "archive_sha256": "3300bdb7ea9490d95336f41a844ba6307e1a689b18ead5bd23728b0a09fc8969"
+    }
+  ],
+  "files": {
+    "runner.py": "50d2427691373306004ec5f001156148cc1190b5a052dfc2634ac69acde74a1e",
+    "decoder.py": "15c38bd7b488ed7bf6b5a2b32273f73ed2dd98aaae90fb0bf1561cb7819d270d",
+    "twisted.py": "e6f1fd430e5f53a43687df23095fc1d5391399e51e369208944ab137cd8c4ebc",
+    "geometry.py": "3ce975e23d305378c21722278be8def26b2d0d76bb39c703f539f4f7c40553cd",
+    "lattice.py": "9deafe09ddeb84a47edc1106fa8fd7138c903fc4445efe6c9ac1c839cb40fbea",
+    "paper-era/runner.py": "15c870a0c9ae2f6262f0c9ea0da37faa79c18a57fdd34284162d9df8dd40bd15",
+    "paper-era/decoder.py": "5785e4e2726f5ac9864db791879e60dc9b1dbd757a99f706a25914affbf6f83a",
+    "paper-era/twisted.py": "93c8b8861d8dbadff500e80d2e47cb344599392217e0e6ecd144172d0cea58c9",
+    "paper-era/geometry.py": "3ce975e23d305378c21722278be8def26b2d0d76bb39c703f539f4f7c40553cd"
+  },
+  "history_checked": [
+    {
+      "sha": "d4f0918c841bb4dde632dd5010425a28f4c0e43f",
+      "committed_at": "2026-07-22T13:20:58Z",
+      "message": "minimal threshold vs N_layers computation"
+    },
+    {
+      "sha": "ed9a429aeb7f3c7ce462db0b42e0da06102c84ff",
+      "committed_at": "2026-07-21T12:03:17Z",
+      "message": "Add multi-layer interleaved JIT pipeline with per-layer delegated-error functions and Slurm sweep"
+    },
+    {
+      "sha": "535fc70627c897e61347df73cab07e5343aa20db",
+      "committed_at": "2026-06-12T13:22:54Z",
+      "message": "fix x_loop skipping dictionary bug"
+    },
+    {
+      "sha": "7e72d1fa7019b6c3403654b1b6705ab7e2deb7be",
+      "committed_at": "2026-06-12T13:21:54Z",
+      "message": "fix overcounting in is_logical_error() with error_type='x', by performing an explicit count of the nontrivial loops"
+    },
+    {
+      "sha": "2763fbc1ecccaf5523518cccb9fa57abd2253758",
+      "committed_at": "2026-05-15T14:00:01Z",
+      "message": "typo"
+    },
+    {
+      "sha": "48cc2e2bb8ccaa04463d12308e6c698b33cd840f",
+      "committed_at": "2026-05-13T08:03:35Z",
+      "message": "Fix problem in logical error estimation - a Z errors corresponds to an odd number of nontrivial loops, X errors correspond to a >0 number of nontrivial loops (estimated approximately)"
+    },
+    {
+      "sha": "018ca7afd8added944392bd75b0db8804ef5228c",
+      "committed_at": "2026-04-06T14:44:36Z",
+      "message": "Update arXiv reference format in comments"
+    },
+    {
+      "sha": "916f3d0cc0e93f566530083cdbe8efa12564343f",
+      "committed_at": "2026-04-06T14:43:38Z",
+      "message": "Fix arXiv identifier in project description\n\nUpdated arXiv identifier in README."
+    },
+    {
+      "sha": "ea6c8f3f4d34d71d749f14f9d03d3a3bdabf5823",
+      "committed_at": "2026-04-02T12:21:47Z",
+      "message": "Fix typo in README description of JIT decoder"
+    },
+    {
+      "sha": "64c0e6075232319d5246862b4de758b4faf75521",
+      "committed_at": "2026-03-27T15:15:10Z",
+      "message": "Data-generation for TQD errors and JIT decoding."
+    },
+    {
+      "sha": "00339f41beec32d32e679414109d14a553bbb296",
+      "committed_at": "2026-03-27T15:12:22Z",
+      "message": "Enhance README with module details and usage\n\nExpanded README with module layout and usage examples."
+    },
+    {
+      "sha": "77f77c4903345a22d0da171f482bbdb45878da57",
+      "committed_at": "2026-03-27T15:09:25Z",
+      "message": "Initial commit"
+    }
+  ]
+}

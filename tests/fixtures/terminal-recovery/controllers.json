@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "bindings": {
+    "repetition": {
+      "import": "magna_example_decoders:syndrome_recovery",
+      "version": "three-qubit-repetition-v1",
+      "config": {
+        "leaders": [
+          0,
+          1,
+          4,
+          2
+        ],
+        "width": 3,
+        "sha256": "ba67e46200270310f83a85a0ccb5c61b150044ab8312afd6d3aa386b9a6db55b"
+      }
+    }
+  }
+}

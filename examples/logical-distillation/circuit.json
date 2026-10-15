@@ -1,0 +1,20 @@
+{
+  "distance": 3,
+  "p": "0",
+  "q": "0",
+  "physical_qubits": 102,
+  "data_patches": 5,
+  "resource_patches": 1,
+  "magic_inputs": 15,
+  "memory_windows": 0,
+  "fold_cycles": 15,
+  "ordinary_cycles": 5,
+  "transversal_cnots": 31,
+  "measurement_records": 451,
+  "control_bits": 334,
+  "architecture": "compact",
+  "unitary_ticks": 166,
+  "encoded_input_error": "1/100",
+  "minimal_syndromes": true,
+  "ideal_input_recovery_rounds": 15
+}

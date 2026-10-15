@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520" role="img" aria-labelledby="title desc">
+<title id="title">Prepared task lifecycle</title><desc id="desc">Circuit compilation prepares shared ReferenceNetwork parents. Original noise and reported-input controllers supply Pauli assignments. Native sampling and exact enumeration schedule global evaluation and accumulate history masses.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#496377"/></marker></defs>
+<rect width="1000" height="520" fill="#ffffff"/>
+<path d="M265 70 H340" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M600 70 H675" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M825 115 V180" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M265 225 H340" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M600 225 H675" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M265 375 H300 V245 H340" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M470 380 V270" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M340 420 H285 V450 H140 V420" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M600 435 H675" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M825 270 V380" fill="none" stroke="#496377" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="20" y="25" width="245" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="142.5" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">CircuitFile / InstrumentIR</text>
+<text x="142.5" y="85" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Original fixed-input circuit</text>
+<rect x="340" y="25" width="260" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="470.0" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">compile_circuit</text>
+<text x="470.0" y="85" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Boundary-specific preparation</text>
+<rect x="675" y="25" width="300" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="825.0" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">ReferenceNetwork parent</text>
+<text x="825.0" y="85" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Shared compiled resource + Pauli maps</text>
+<rect x="20" y="180" width="245" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="142.5" y="213" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Physical noise</text>
+<text x="142.5" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Original errors and report flips</text>
+<rect x="340" y="180" width="260" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="470.0" y="213" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Pauli assignments</text>
+<text x="470.0" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Original faults + reached offsets</text>
+<rect x="675" y="180" width="300" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="825.0" y="213" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Global evaluator</text>
+<text x="825.0" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Transport parent, contract boundary</text>
+<rect x="20" y="330" width="245" height="90" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="142.5" y="363" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Reported-input controller</text>
+<text x="142.5" y="390" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Declared reported inputs</text>
+<rect x="340" y="380" width="260" height="105" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="470.0" y="413" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Sampling / enumeration</text>
+<text x="470.0" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Causal queries, limits and batches</text>
+<rect x="675" y="380" width="300" height="105" rx="10" fill="#eef5fa" stroke="#7298b0"/>
+<text x="825.0" y="413" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" font-weight="bold" fill="#17364b">Contributions / statistics</text>
+<text x="825.0" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" fill="#284b63">Joint contributions and uncertainty</text>
+</svg>
