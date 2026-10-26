@@ -5,6 +5,14 @@ Notable changes to magna, newest first.
 
 ## Unreleased
 
+### Added
+
+- An opt-in experimental CUDA sampler for supported fixed Pauli-noise tasks,
+  including homogeneous importance proposals with a complete native count-weight
+  table. Fused noise/frame sampling, certified exact conditional probability
+  queries and device-side statistics run on the GPU. The default CPU sampler
+  and its seeded results are unchanged; CUDA uses a separate Philox stream.
+
 ## 0.2.0 (2026-10-26)
 
 ### Added

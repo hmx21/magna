@@ -7,7 +7,7 @@ Pauli noise and classical feedback, and reports exact or statistically estimated
 probabilities, logical error rates and target-state fidelities.
 It compiles the whole fixed-input circuit into one amplitude and contracts it globally,
 so the cost is set by the requested output rather than by the number of qubits alone,
-and every per-draw quantity is exact.
+and the default CPU sampler keeps every per-draw quantity exact.
 
 Protocols are Stim-style circuit files with classical control registers, external decoder calls
 and in-circuit postselection on detectors. A task selects the output qubits and the
@@ -31,6 +31,11 @@ from the accompanying paper that `scripts/run_task.py` runs through the public i
 copy a directory and the runner next to an installed simulator to run it anywhere.
 The TQD tasks call their authors' decoder, which is not distributed here;
 `python scripts/fetch_author_decoder.py` downloads it at the pinned commit and checks its hashes.
+
+Supported fixed Pauli-noise tasks can also use an opt-in experimental
+[CUDA sampling backend](docs/software/cuda.md). The default CPU interface and
+seeded stream remain unchanged; CUDA has separate dependencies and explicit
+support and numerical bounds.
 
 ## Documentation
 

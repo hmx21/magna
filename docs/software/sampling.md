@@ -5,6 +5,11 @@ measurement bits those decoders read. Two independent choices control these draw
 the *noise proposal* (physical or importance) and the *history sampler*
 (`affine_support` or `exact_marginal`). Everything else in a draw is exact.
 
+For supported fixed Pauli-noise tasks, the experimental [CUDA backend](cuda.md)
+provides an explicit device-batched alternative. It has a different seeded stream,
+bounded exact conditional queries and floating-point likelihood/statistics; it
+does not replace the general CPU sampling methods described on this page.
+
 ## Physical sampling
 
 By default faults are drawn from the noise declared in the circuit.

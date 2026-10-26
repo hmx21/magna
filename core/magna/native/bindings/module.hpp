@@ -5,6 +5,7 @@
 #include <Python.h>
 #include <chrono>
 #include <cmath>
+#include <cstring>
 #include <random>
 #include <exception>
 #include <memory>
@@ -311,6 +312,9 @@ PyObject* contract_ket(PyObject*, PyObject* arg) {
 #include "low_weight_bindings.hpp"
 #include "file_statistics_bindings.hpp"
 #include "file_execution_bindings.hpp"
+#include "cuda_experiment_bindings.hpp"
+#include "cuda_noise_bindings.hpp"
+#include "cuda_query_bindings.hpp"
 #include "file_enumeration_bindings.hpp"
 #include "branch_bindings.hpp"
 #include "proposal_bindings.hpp"

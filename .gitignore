@@ -1,5 +1,6 @@
 # Environments, caches and builds
 .venv/
+.cuda-cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/

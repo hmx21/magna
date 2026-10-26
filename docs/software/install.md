@@ -20,6 +20,9 @@ This installs the `magna` Python package and the `magna` command.
 Some packaged tasks need extra packages for their decoders (SciPy, PyMatching, Stim).
 Each task directory lists them in its `requirements.txt`; install those when you run that task.
 
+The optional [CUDA backend](cuda.md) has separate GPU dependencies. They are not
+installed by a plain `pip install .` and do not affect the default CPU sampler.
+
 ## Install a released version
 
 Every release has a tag, listed on the [releases page](https://github.com/itpyi/magna/releases).

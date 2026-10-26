@@ -1,5 +1,8 @@
 # Python API
 
+The opt-in [CUDA sampler](cuda.md#python-api) is a separate experimental interface.
+The CPU functions documented below retain their existing defaults and result format.
+
 The file interface mirrors the command line and is the normal way to use the simulator.
 Everything it needs, including its [errors](#errors), is imported from `magna`.
 The [operation-level interface](#operation-level-interface), described at the end,
