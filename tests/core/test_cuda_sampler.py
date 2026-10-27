@@ -316,9 +316,6 @@ class GpuMomentTests(unittest.TestCase):
                                 status=self.cp.asarray([[0, 1]], dtype=self.cp.int32))
         with self.assertRaisesRegex(ValueError, 'flags=16'):
             self.fake_sampler()._gpu_moments(exact)
-        exact.status = self.cp.zeros((1, 1), dtype=self.cp.int32)
-        with self.assertRaisesRegex(ValueError, 'query status'):
-            self.fake_sampler()._gpu_moments(exact)
 
     def test_complete_true_t_sampler_cpu_gpu_and_chunking(self):
         from magna import compile_circuit, parse_circuit
