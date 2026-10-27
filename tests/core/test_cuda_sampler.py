@@ -46,7 +46,9 @@ def independent_means(a, e):
 def assert_moments_close(actual, expected, rtol):
     assert actual.count == expected.count, (actual.count, expected.count)
     np.testing.assert_allclose(actual.mean, expected.mean, rtol=rtol, atol=1e-16)
-    np.testing.assert_allclose(actual.root, expected.root, rtol=rtol, atol=1e-16)
+    # An exactly zero residual entry is compared at the scale of the whole factor.
+    scale = float(np.max(np.abs(expected.root)))
+    np.testing.assert_allclose(actual.root, expected.root, rtol=rtol, atol=rtol*scale)
 
 
 def exact_standard_errors(a, e=None):
