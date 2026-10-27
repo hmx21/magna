@@ -9,6 +9,10 @@ Notable changes to magna, newest first.
 
 - The README explains how to cite magna.
 
+### Changed
+
+- Python decoder functions are called with less overhead, so sampling with a fast decoder is faster.
+
 ## 0.2.0 (2026-10-26)
 
 ### Added
