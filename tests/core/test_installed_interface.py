@@ -29,10 +29,10 @@ class NoOptionalImports(importlib.abc.MetaPathFinder):
 sys.meta_path.insert(0, NoOptionalImports())
 from magna import _native, parse_circuit, run
 from magna._cuda_source import _read_cuda_source
-for name in ('frame_transport.cu', 'noise_sampling.cu', 'probability_queries.cu', 'statistics.cu'):
+for name in ('noise_sampling.cu', 'probability_queries.cu', 'statistics.cu'):
     source = _read_cuda_source(name)
     assert '__global__' in source, name
-for name in ('make_cuda_experiment', 'make_cuda_queries', 'cuda_noise_cpu_sample'):
+for name in ('make_cuda_experiment', 'make_cuda_queries', 'cuda_noise_metadata'):
     assert hasattr(_native, name), name
 assert run(parse_circuit('I 0'), shots=4, seed=9)['status'] == 'complete'
 ''')

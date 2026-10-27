@@ -33,10 +33,6 @@ Three estimators share the same circuit and task:
 - **Importance sampling** draws faults from a scaled proposal and reweights each draw exactly.
 - **Low-weight enumeration** sums every fault pattern up to a chosen weight exactly and bounds the rest.
 
-These describe the general CPU interfaces. The optional experimental
-[CUDA backend](cuda.md) supports a bounded subset of fixed Pauli-noise tasks,
-with exact conditional probabilities and floating-point likelihood/statistics.
-
 ## What makes it different
 
 Stabilizer samplers such as Stim handle Clifford circuits only.

@@ -11,8 +11,10 @@ except ImportError:
     raise unittest.SkipTest('optional NumPy required')
 
 from magna import compile_circuit, parse_circuit
-from magna.cuda_experiment import CudaExperiment
-from magna.cuda_noise import FusedCudaNoise
+from magna._cuda_experiment import CudaExperiment
+from magna._cuda_noise import FusedCudaNoise
+from tests.support.cuda_reference import (actions_to_noise, cpu_sample, cpu_sample_weighted, draw,
+                                          evaluate_frames, evaluate_noise, oracle_sample, weights_for_noise)
 
 
 def resource_noise(count=14, *, scale=None, endpoints=False):
@@ -47,15 +49,17 @@ class ImportanceNoiseCpuTests(unittest.TestCase):
                     independent = expected_weight(count, faults, p, q)
                     self.assertEqual(Fraction(*ratio), independent)
                     self.assertEqual(noise.likelihood_values[faults], float(independent))
-                np.testing.assert_array_equal(np.ldexp(noise.likelihood_mantissas,
-                                                       noise.likelihood_exponents), noise.likelihood_values)
+                np.testing.assert_array_equal(
+                    np.ldexp(np.frombuffer(noise.metadata['likelihood_mantissas'], dtype='<f8'),
+                             np.frombuffer(noise.metadata['likelihood_exponents'], dtype='<i4')),
+                    noise.likelihood_values)
 
     def test_matches_public_native_sampler_exact_likelihoods(self):
         noise = resource_noise(14)
         rng = Random(20261028)
         seeds = [rng.getrandbits(64) for _ in range(128)]
-        batch = noise.experiment.draw(seeds)
-        weights = noise.weights_for_noise(batch)
+        batch = draw(noise.experiment, seeds)
+        weights = weights_for_noise(noise, batch)
         rng = Random(20261028)
         for shot in range(128):
             public = noise.experiment.compiled.sample(rng)
@@ -72,14 +76,14 @@ class ImportanceNoiseCpuTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'sample_weighted'):
             noise.sample(1, 0)
         with self.assertRaisesRegex(ValueError, 'cpu_sample_weighted'):
-            noise.cpu_sample(1, 0)
+            cpu_sample(noise, 1, 0)
 
     def test_endpoints_and_unity_proposals_do_not_change_weight_count(self):
         noise = resource_noise(14, endpoints=True)
         self.assertEqual(noise.weighted_sites.tolist(), [0, 0]+[1]*14)
-        frames, weights, batch = noise.cpu_sample_weighted(257, 71, return_noise=True)
-        np.testing.assert_array_equal(weights, noise.weights_for_noise(batch))
-        oracle, oracle_batch = noise.oracle_sample(3, 71)
+        frames, weights, batch = cpu_sample_weighted(noise, 257, 71, return_noise=True)
+        np.testing.assert_array_equal(weights, weights_for_noise(noise, batch))
+        oracle, oracle_batch = oracle_sample(noise, 3, 71)
         np.testing.assert_array_equal(frames[:3], oracle)
         np.testing.assert_array_equal(batch.indices[:int(batch.offsets[3])], oracle_batch.indices)
         # Exactly one certain unweighted action occurs in every shot.
@@ -91,8 +95,8 @@ class ImportanceNoiseCpuTests(unittest.TestCase):
                 sampling={'method': 'importance', 'proposal_scale': scale}))
             unit = FusedCudaNoise(experiment)
             self.assertFalse(unit.has_importance_weights)
-            a = unit.cpu_sample(17, 123)
-            b, weights = unit.cpu_sample_weighted(17, 123)
+            a = cpu_sample(unit, 17, 123)
+            b, weights = cpu_sample_weighted(unit, 17, 123)
             np.testing.assert_array_equal(a, b)
             np.testing.assert_array_equal(weights, np.ones(17))
 
@@ -112,13 +116,13 @@ class ImportanceNoiseCpuTests(unittest.TestCase):
 
     def test_zero_shots_and_chunk_partition(self):
         noise = resource_noise(68)
-        frames, weights, empty = noise.cpu_sample_weighted(0, 1, return_noise=True)
+        frames, weights, empty = cpu_sample_weighted(noise, 0, 1, return_noise=True)
         self.assertEqual(frames.shape, (0, noise.width))
         self.assertEqual(weights.shape, (0,))
         self.assertEqual(empty.shots, 0)
-        full, full_w = noise.cpu_sample_weighted(257, 912, offset=2**32-37)
-        a, wa = noise.cpu_sample_weighted(93, 912, offset=2**32-37)
-        b, wb = noise.cpu_sample_weighted(164, 912, offset=2**32-37+93)
+        full, full_w = cpu_sample_weighted(noise, 257, 912, offset=2**32-37)
+        a, wa = cpu_sample_weighted(noise, 93, 912, offset=2**32-37)
+        b, wb = cpu_sample_weighted(noise, 164, 912, offset=2**32-37+93)
         np.testing.assert_array_equal(full, np.concatenate([a, b]))
         np.testing.assert_array_equal(full_w, np.concatenate([wa, wb]))
 
@@ -137,24 +141,24 @@ class ImportanceNoiseGpuTests(unittest.TestCase):
             ideal_state=parse_circuit('H 0\nT 0'),
             sampling={'method':'importance','proposal_scale':'2'})))
         frames, weights, actions = noise.sample_weighted(257, 2971, offset=2**32-129, return_actions=True)
-        cpu_frames, cpu_weights, cpu_batch = noise.cpu_sample_weighted(257, 2971,
+        cpu_frames, cpu_weights, cpu_batch = cpu_sample_weighted(noise, 257, 2971,
             offset=2**32-129, return_noise=True)
-        batch = noise.actions_to_noise(actions)
+        batch = actions_to_noise(noise, actions)
         np.testing.assert_array_equal(frames.get(), cpu_frames)
         np.testing.assert_array_equal(weights.get(), cpu_weights)
         np.testing.assert_array_equal(batch.offsets, cpu_batch.offsets)
         np.testing.assert_array_equal(batch.indices, cpu_batch.indices)
-        np.testing.assert_array_equal(cpu_weights, noise.weights_for_noise(batch))
+        np.testing.assert_array_equal(cpu_weights, weights_for_noise(noise, batch))
         self.assertGreater(float(cpu_weights.max()), 1.)
-        self.assertEqual(noise.experiment.evaluate_frames(cpu_frames), noise.experiment.evaluate_noise(batch))
-        oracle, oracle_batch = noise.oracle_sample(3, 2971, offset=2**32-129)
+        self.assertEqual(evaluate_frames(noise.experiment, cpu_frames), evaluate_noise(noise.experiment, batch))
+        oracle, oracle_batch = oracle_sample(noise, 3, 2971, offset=2**32-129)
         np.testing.assert_array_equal(cpu_frames[:3], oracle)
         np.testing.assert_array_equal(batch.indices[:int(batch.offsets[3])], oracle_batch.indices)
 
     def test_paper_size_device_weight_distribution_and_chunking(self):
         noise = resource_noise(308)
         frames, weights = noise.sample_weighted(2048, 2026100800)
-        cpu_frames, cpu_weights, batch = noise.cpu_sample_weighted(2048, 2026100800, return_noise=True)
+        cpu_frames, cpu_weights, batch = cpu_sample_weighted(noise, 2048, 2026100800, return_noise=True)
         np.testing.assert_array_equal(frames.get(), cpu_frames)
         np.testing.assert_array_equal(weights.get(), cpu_weights)
         a, wa = noise.sample_weighted(997, 2026100800)

@@ -1,42 +1,38 @@
-# Experimental CUDA sampling
+# CUDA sampler
 
-`magna.cuda_sampler.CudaSampler` is an explicit, optional backend for supported
-fixed Pauli-noise tasks. It reuses `compile_circuit` and its exact query plans,
-then runs noise sampling, Pauli-frame accumulation, conditional probability
-queries and batch statistics on an NVIDIA GPU. It does not change `magna.run`,
-the `magna` command, the default CPU random stream, or existing decoder APIs.
+The experimental CUDA sampler runs physical and importance sampling of supported tasks on an NVIDIA GPU.
+It reports the same acceptance, error and conditional error as `run`, with every per-draw
+probability still exact, and draws hundreds of times faster than the CPU sampler.
+Use it when a task needs more draws than the CPU sampler completes in the time you have.
 
-This backend is experimental and supports a subset of the general simulator.
-Unsupported structures and numerical ranges raise errors; there is no hidden
-per-draw CPU fallback.
+On an RTX 4090 D, 262,144 draws of four example tasks took the following times,
+compared with `run` on one core of a Ryzen 9 9950X (median of three runs, batch size 65,536,
+first-call compilation excluded):
+
+| Task | Sampling | `run` (s) | CUDA sampler (ms) | Speed-up |
+|---|---|---:|---:|---:|
+| `bh2-T` | importance, scale 1000/7 | 1.20 | 1.80 | 665x |
+| `bh100-T` | importance, scale 500/77 | 9.82 | 38.6 | 254x |
+| `color3` | physical | 0.99 | 1.47 | 671x |
+| `rp2-d5` | physical | 1.46 | 6.25 | 233x |
 
 ## Install
 
-Install from a checkout containing this feature, with Python 3.11 or newer and
-the usual C++17 compiler. The CUDA 12 extra adds NumPy and CuPy:
+You need an NVIDIA GPU with a driver that supports CUDA 12. Install magna with the `cuda12` extra,
+which adds NumPy and CuPy:
 
 ```sh
 python -m pip install ".[cuda12]"
 ```
 
-A compatible NVIDIA driver and CUDA runtime/NVRTC are also needed. If a CUDA 12
-toolkit is not installed, CuPy supports installing NVIDIA's component wheels:
+CuPy also needs the CUDA runtime libraries. If no CUDA 12 toolkit is installed,
+`python -m pip install "cupy-cuda12x[ctk]>=14,<15"` installs them as Python packages;
+[CuPy's installation guide](https://docs.cupy.dev/en/stable/install.html) lists the other options.
+Building magna itself needs no CUDA compiler: the sampler compiles its GPU code the first time it runs.
 
-```sh
-python -m pip install "cupy-cuda12x[ctk]>=14,<15"
-```
+## Run a task
 
-See [CuPy's installation guide](https://docs.cupy.dev/en/stable/install.html)
-for platform and driver requirements. Do not install conflicting CuPy packages
-in one environment. This extra targets CUDA 12; CPU-only users need neither
-NumPy nor CuPy to import and run the default installed MAGNA package.
-
-CUDA sources are packaged under `core/magna/native/cuda/` and compiled at runtime
-by CuPy/NVRTC. Building the Python extension does not invoke `nvcc` or require a
-GPU. First use includes context creation, uploads, compilation and allocation;
-reuse a sampler when measuring sustained throughput.
-
-## Python API
+Compile the task as usual, then pass it to `CudaSampler`:
 
 ```python
 from magna import compile_circuit
@@ -45,149 +41,68 @@ from magna.cuda_sampler import CudaSampler
 compiled = compile_circuit(
     "examples/bh2-T/physical.magna",
     task="examples/bh2-T/task.json",
-    sampling={"method": "physical"},
+    sampling={"method": "importance", "proposal_scale": "1000/7"},
 )
 sampler = CudaSampler(compiled)
-result = sampler.run(1_048_576, seed=7, batch_size=65_536)
+result = sampler.run(1_048_576, seed=7)
 print(result["estimates"], result["standard_errors"])
 ```
 
-`CudaSampler.run(shots, *, seed=0, offset=0, batch_size=65536, backend="gpu")`
-attempts `shots` draws, split into chunks of at most `batch_size`. A shorter tail
-chunk processes the remainder. The batch limit is 1,000,000; the total draw count
-is limited to `2**53` for exact float64 count representation. `seed`, `offset`
-and the final global draw index must fit unsigned 64-bit integers.
+`CudaSampler.run(shots, *, seed=0, offset=0, batch_size=65536)` attempts `shots` draws.
+Draws are numbered from `offset`, so `run(n, seed=7, offset=n)` continues a run of `n` draws with the next `n`.
 
-The default batch is a generic starting point, not an optimal size for every
-task. To tune throughput, keep total draws fixed, vary only the batch size,
-warm each candidate and compare synchronized complete calls. A batch chosen as
-the smallest attaining 95% of peak throughput is a memory/throughput compromise,
-not necessarily the fastest measured batch. Large batches can also be slower.
+The GPU processes the draws in batches of at most `batch_size` (up to 1,000,000);
+larger batches use more GPU memory.
 
-`backend="cpu"` runs the new backend's Philox/query-plan control, which needs
-NumPy but not CuPy. It is useful for deterministic differential checks. It is
-**not** the original CPU sampler and must not be substituted for `magna.run` in
-an original-CPU speedup claim.
-
-Do not reconfigure or modify a compiled task's options after constructing a
-sampler. Recreate both objects when changing the circuit, target or sampling
-configuration. Use one sampler from one host thread at a time.
-
-### Results and numerical contract
-
-The returned dictionary is specific to this experimental API; it is not the
-full `magna.run` report schema. Its principal fields are:
-
-| Field | Meaning |
-|---|---|
-| `status`, `requested`, `completed` | Completion and attempted draw counts |
-| `seed`, `offset`, `batch_size`, `rng` | Reproducibility and chunking information |
-| `estimates.acceptance` | Mean accepted mass |
-| `estimates.error` | Mean accepted-error mass, or `None` without a target |
-| `estimates.conditional_error` | Aggregate error / acceptance, or `None` when undefined |
-| `standard_errors` | Corresponding floating-point IID standard-error estimates |
-| `moments`, `centered_statistics` | Raw diagnostic sums and stable centered summary |
-| `timings.sampling_seconds` | Sampling and reduction time, before final Python result formatting |
-
-Per-draw conditional probabilities use bounded exact integer representations of
-cyclotomic scalars, including genuinely non-Clifford values. Target normalization
-must be a positive power of two for the aggregate sampler. Likelihood conversion,
-means and standard errors use guarded float64 arithmetic, not arbitrary-precision
-rational statistics. Invalid probabilities and unsupported overflow/underflow
-ranges fail explicitly.
-
-Device reduction maintains centered covariance factors; Python merges chunk
-summaries and formats estimates. It does not subtract two large raw moments to
-estimate a small variance. A batch returns eleven scalar summary/status values
-to the host, rather than copying every draw's frame and probability.
-
-The lower-level `CudaExperiment` and `GpuQueries` interfaces expose unweighted
-conditional masses. For importance sampling, use `CudaSampler` or explicitly
-apply the returned likelihoods before averaging.
+The first call also compiles the GPU code, so reuse one sampler for repeated runs.
+After changing the circuit, task, sampling or options, compile again and create a new sampler.
+Use a sampler from one thread at a time.
 
 ## Supported tasks
 
-- Fixed Pauli-noise schedules, including native categorical/correlated Pauli
-  actions and measurement-report flips, with affine frame propagation.
-- Acceptance and ideal-target error queries. Observable-moment requests,
-  decoder callbacks, sampled conditional histories and guarded noise are not
-  supported by this backend.
-- Physical sampling, or a homogeneous importance proposal represented by one
-  complete native count-weight table covering all nonunit likelihood factors.
-  Counted proposals currently require 2--512 sites. Heterogeneous multi-group
-  and custom stratified proposals are rejected.
-- Certified reduced queries: dynamic quadratic/Gauss queries with dimension at
-  most 64; statically certified Gauss geometry up to 1,024; bounded residual
-  phase sums up to dimension 12. These are reduced query dimensions, **not**
-  the physical circuit's qubit count. Constructor and execution checks enforce
-  the representation and geometry bounds.
+The CUDA sampler supports a task when:
 
-Importance sampling preserves the compiled proposal and native likelihood
-table. Each draw's accepted/error contribution is multiplied by its likelihood;
-means divide by attempted draws, never by the sum of weights. Contributions may
-exceed one. The full likelihood table must fit the positive float64 range and
-the sampler's `2**480` weight bound.
+- it has no [decoder calls](controllers.md), no [conditional noise](noise.md#conditional-noise),
+  no sampled records and no observables;
+- it uses physical sampling, or importance sampling in which every scaled noise location
+  has the same total error probability and there are between 2 and 512 of them.
+  A noise location is one target qubit or qubit pair of a noise instruction, one correlated-error chain,
+  or one noisy measurement;
+- if the ideal state uses postselection, its postselection probability is a power of two.
 
-For example, this explicitly changes BH 14-to-2 to a homogeneous importance
-proposal. It is a different sampling configuration from the physical example:
+Affine feedback, correlated errors, Pauli channels and measurement report errors are all supported.
+For an unsupported task, `CudaSampler(compiled)` raises `ValueError` with the reason.
 
-```python
-compiled = compile_circuit(
-    "examples/bh2-T/physical.magna",
-    task="examples/bh2-T/task.json",
-    sampling={"method": "importance", "proposal_scale": "1000/7"},
-)
-result = CudaSampler(compiled).run(65_536, seed=7, batch_size=16_384)
-```
+The example tasks run as follows:
 
-## Random streams
+| Examples | Physical sampling | Importance sampling |
+|---|---|---|
+| `bh2`–`bh100`, `-S` and `-T` | Yes | Yes |
+| `color3`, `color5`, `rp2-d3`, `rp2-d3-S`, `rp2-d5`, `rp2-d5-S`, `wg-S`, `wg-T` | Yes | No: more than 512 noise locations |
+| `dk`, `logical-distillation`, `tqd3`, `tqd4`, `tqd5` | No: decoder calls | No |
 
-CUDA uses Philox4x32-10 addressed by the global draw ID. Changing chunk size
-preserves that backend's noise choices for a fixed seed and offset. Chunk merges
-can differ by floating-point rounding. The original CPU sampler uses its existing
-MT stream, so equal CPU/GPU seeds do **not** imply the same concrete histories.
-Use the same-Philox CPU control or explicit noise histories for exact comparisons.
-Existing CPU seeded results remain unchanged.
+## Results
 
-## Portable tasks and benchmarks
+`run` returns a dictionary:
 
-The CUDA task script uses the same `run.json` loader as `scripts/run_task.py`:
+| Field | Meaning |
+|---|---|
+| `status` | `complete` |
+| `requested`, `completed` | Number of draws |
+| `seed`, `offset`, `batch_size` | The arguments of `run` |
+| `estimates` | `acceptance`, `error` and `conditional_error` |
+| `standard_errors` | Standard errors of the same three estimates |
+| `timings.sampling_seconds` | Time spent sampling |
 
-```sh
-python scripts/run_cuda_task.py --task examples/bh2-T --shots 65536 --batch-size 16384 --output run.json
-python scripts/benchmark_cuda_sampling.py --task examples/bh2-T --shots 262144 --batch-size 65536 --repeat 3 --output benchmark.json
-```
+The estimates and standard errors mean the same as in the [result of `run`](results.md#read-the-estimates),
+including the weighting of importance-sampled draws.
+`error` and `conditional_error` are `None` when the task has no ideal state.
+The result has no scientific fields, so a value outside the range of ordinary doubles raises `ValueError`
+instead of becoming `null`.
 
-Both preserve the task's options and sampling configuration. To override it,
-provide `--sampling physical`, or explicitly provide importance and its scale:
+## Random numbers
 
-```sh
-python scripts/benchmark_cuda_sampling.py --task examples/bh2-T --sampling importance --proposal-scale 1000/7 --shots 262144 --batch-size 65536 --repeat 3 --output benchmark-importance.json
-```
-
-The benchmark compares original `magna.run` with the GPU on equal total attempted
-draws, using complete synchronized API wall times and repeated medians. Preparation
-and explicit warmups are separate. Each timed GPU call has an immediately preceding
-same-size warmup, so long CPU calls do not give only some GPU trials an idle start.
-The ordinary task runner warms one chunk; use the benchmark for throughput claims.
-Records include task/configuration, input and
-installed-module hashes, software, hardware and individual timings. Measure the
-actual installed version and identify it with those records. These measurements do not imply cold-start speedups or a
-comparison with a tuned multicore CPU implementation.
-
-## Validation
-
-The regular source suite runs CPU bridge, exact-plan, importance and numerical
-statistics checks with NumPy. GPU tests skip when CuPy or a CUDA device is absent;
-kernel compilation or execution failures are not silently skipped. Run all checks
-with the regular project command, or only this backend with:
-
-```sh
-python -m unittest discover -s tests/core -p 'test_cuda*.py' -v
-```
-
-The CUDA checks include exact small-circuit oracles, the public RP2/BH tasks,
-Philox controls, full-frame basis checks, importance weights, chunk invariance,
-stable standard errors and explicit rejection paths. Standard CPU CI does not
-establish GPU runtime correctness; report an actual CUDA run and its environment
-when changing these kernels.
+The CUDA sampler uses its own random number generator, Philox4x32-10, indexed by the draw number.
+The same seed and offset give the same faults whatever the batch size;
+estimates can still differ in the last digits, because batches are summed in a different order.
+CPU and GPU runs with the same seed draw different faults.

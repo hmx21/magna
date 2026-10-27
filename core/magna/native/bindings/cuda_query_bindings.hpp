@@ -424,29 +424,3 @@ PyObject* cuda_query_cpu_evaluate(PyObject*, PyObject* args) {
         return PyTuple_Pack(3, c.p, p.p, s.p);
     } catch(...) { return execution_error(); }
 }
-
-PyObject* cuda_query_layout(PyObject*, PyObject* cap) {
-    try {
-        auto* bridge = cuda_experiment_handle(cap);
-        if(!bridge) return nullptr;
-        CompiledExperiment::ExclusiveUse use(*bridge->run);
-        cuda_validate_run(*bridge);
-        Object out(PyDict_New());
-        auto append = [&](const char* name, const FileBoundary& engine, const char* purpose) {
-            const auto& parent = *engine.reference_networks.at(purpose);
-            const auto& network = *parent.reference;
-            Object row(Py_BuildValue("{s:n,s:n,s:n,s:n,s:n,s:n,s:n,s:n,s:n,s:n,s:n,s:O}",
-                    "kept", Py_ssize_t(network.boundary.keep.size()), "closed", Py_ssize_t(parent.closed.size()),
-                    "capped_history", Py_ssize_t(parent.capped_history), "events", Py_ssize_t(network.boundary.events.size()),
-                    "input_dimension", Py_ssize_t(network.input_dimension), "restricted_dimension", Py_ssize_t(network.restricted.clifford.n),
-                    "phase_dimension", Py_ssize_t(network.phase_dimension), "reference_rank", Py_ssize_t(network.reference_rank),
-                    "magic", Py_ssize_t(network.magic.size()), "fixed_phase", Py_ssize_t(network.fixed_phase.size()),
-                    "reference_terms", Py_ssize_t(network.reference_terms),
-                    "fixed_certificate", network.fixed_certificate() ? Py_True : Py_False));
-            phase_set(out.p, name, Py_NewRef(row.p));
-        };
-        append("acceptance", *bridge->engine, "acceptance");
-        if(bridge->target) append("target", *bridge->target, "fidelity");
-        return Py_NewRef(out.p);
-    } catch(...) { return execution_error(); }
-}

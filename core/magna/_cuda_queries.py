@@ -1,12 +1,11 @@
-"""Exact device-side scalar queries for fixed MAGNA probability networks.
+"""Exact device-side scalar queries for fixed magna probability networks.
 
 The compiler exports the boundary support and frame-dependent Clifford
 updates. Small quadratic forms use an exact binary Gauss sum. Large forms
 use a prepared elimination only after an algebraic proof that every noise
 column preserves its geometry; device guards reject other geometries.
 Residual non-Clifford tensors of at most 12 variables are summed into eight
-integer phase bins. No sampled truth table, floating contraction, or CPU
-per-shot probability fallback is used.
+integer phase bins. No sampled truth table or floating contraction is used.
 """
 from dataclasses import dataclass
 import numpy as np
@@ -20,47 +19,10 @@ _CUDA = _read_cuda_source("probability_queries.cu")
 
 @dataclass
 class ExactQueryResult:
+    """Device arrays of exact query values; a nonzero ``status`` rejects a value."""
     coefficients: object
     powers: object
     status: object
-
-    def check_status(self):
-        """Reject invalid query results, synchronizing a device status check."""
-        if bool(self.status.any()):
-            flags = self.status if isinstance(self.status, np.ndarray) else self.status.get()
-            codes = sorted(set(map(int, flags[flags != 0])))
-            raise ValueError(f'CUDA exact query rejected frames (1=geometry, 2=padding, 3=nonreal): {codes}')
-
-    def values(self, *, check=True):
-        """Approximate float64 view, with query-status validation by default.
-
-        This conversion can round, cancel or underflow; it is not the exact
-        probability representation. Use ``coefficients``/``powers`` for exact
-        work and CudaSampler for its checked, stable error aggregation.
-        ``check=False`` is only for callers that independently check ``status``
-        before consuming results; it retains asynchronous device execution.
-        """
-        if check:
-            self.check_status()
-        if isinstance(self.coefficients, np.ndarray):
-            xp = np
-        else:
-            import cupy as xp
-        c = self.coefficients
-        return xp.ldexp(c[..., 0].astype(xp.float64) + xp.sqrt(xp.float64(2)) * c[..., 1], self.powers)
-
-    def to_host(self):
-        if isinstance(self.coefficients, np.ndarray):
-            result = self
-        else:
-            result = ExactQueryResult(self.coefficients.get(), self.powers.get(), self.status.get())
-        result.check_status()
-        return result
-
-    def tuples(self):
-        host = self.to_host()
-        return tuple(tuple((tuple(map(int, c)), int(p)) for c, p in zip(cs, ps))
-                     for cs, ps in zip(host.coefficients, host.powers))
 
 
 class GpuQueries:
@@ -69,7 +31,7 @@ class GpuQueries:
     Query 0 is acceptance; query 1, when present, is target_success including
     the target trace multiplier. Error is acceptance * target_normalization
     minus target_success. Nonzero device ``status`` must be checked before
-    accepting results; ``evaluate_host`` always checks it.
+    accepting results; the sampler's statistics kernel checks it.
     """
     def __init__(self, experiment):
         experiment.validate()
@@ -103,7 +65,7 @@ class GpuQueries:
 
     @property
     def cp(self):
-        """Upload/compile device plans lazily; CPU controls need no CuPy."""
+        """Upload and compile device plans on first use."""
         if self._cp is None:
             self.experiment.validate()
             import cupy as cp
@@ -158,20 +120,3 @@ class GpuQueries:
                         arrays['step_tags'], coefficients, powers, status,
                         np.uint64(shots), np.int32(self.query_count), np.int32(query)))
         return ExactQueryResult(coefficients, powers, status)
-
-    def evaluate_host(self, frames):
-        self.experiment.validate()
-        values = np.asarray(frames)
-        if values.dtype != np.uint64 or values.ndim != 2:
-            raise ValueError('host frames must be uint64[shots,words]')
-        return self.evaluate(self.cp.asarray(np.ascontiguousarray(values))).to_host()
-
-    def cpu_evaluate(self, frames):
-        self.experiment.validate()
-        values = np.asarray(frames)
-        if values.dtype != np.uint64 or values.ndim != 2 or values.shape[1] != self.experiment.width:
-            raise ValueError('host frames must match the compiled uint64 frame shape')
-        c, p, s = _native.cuda_query_cpu_evaluate(self.handle, np.ascontiguousarray(values).tobytes())
-        shape = (values.shape[0], self.query_count)
-        return ExactQueryResult(np.frombuffer(c, '<i8').reshape(*shape, 4),
-                                np.frombuffer(p, '<i4').reshape(shape), np.frombuffer(s, '<i4').reshape(shape)).to_host()

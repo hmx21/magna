@@ -13,18 +13,19 @@ except ImportError:
     raise unittest.SkipTest('optional NumPy is required')
 
 from magna import _native, compile_circuit, parse_circuit
-from magna.cuda_experiment import CudaExperiment
-from magna.cuda_queries import ExactQueryResult, GpuQueries
+from magna._cuda_experiment import CudaExperiment
+from magna._cuda_queries import GpuQueries
 from magna.scalar import ExactScalar
+from tests.support.cuda_reference import cpu_evaluate, cpu_frames, draw, evaluate_frames, tuples
 
 
 class CpuQueryControlTests(unittest.TestCase):
     def test_native_cuda_bridge_is_built_even_without_cupy(self):
         # Missing registration is a build failure, not an optional-device skip.
-        for name in ('make_cuda_experiment', 'cuda_query_layout', 'make_cuda_queries',
-                     'cuda_query_cpu_evaluate', 'cuda_noise_metadata', 'cuda_noise_validate',
-                     'cuda_noise_cpu_sample', 'cuda_draw_noise', 'cuda_map_frames',
-                     'cuda_evaluate_frames', 'cuda_evaluate_noise'):
+        for name in ('make_cuda_experiment', 'make_cuda_queries',
+                     '_cuda_query_cpu_evaluate', 'cuda_noise_metadata', 'cuda_noise_validate',
+                     '_cuda_noise_cpu_sample', '_cuda_draw_noise', '_cuda_map_frames',
+                     '_cuda_evaluate_frames', '_cuda_evaluate_noise'):
             with self.subTest(binding=name):
                 self.assertTrue(callable(getattr(_native, name, None)), name)
 
@@ -50,18 +51,18 @@ result = run(compiled, shots=8, seed=123)
 assert result['status'] == 'complete' and result['completed'] == 8
 assert result['estimates']['acceptance'] == 1
 assert result['estimates']['error'] == 0
-assert not any(name.startswith('magna.cuda_') for name in sys.modules)
+assert not any(name.startswith(('magna.cuda_', 'magna._cuda_')) for name in sys.modules)
 '''
         completed = subprocess.run([sys.executable, '-I', '-c', source, str(core)],
                                    capture_output=True, text=True, timeout=30)
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
-    def test_cpu_control_does_not_import_cupy(self):
+    def test_cpu_reference_does_not_import_cupy(self):
         original_import = builtins.__import__
 
         def no_cupy(name, *args, **kwargs):
             if name.split('.')[0] == 'cupy':
-                raise AssertionError('CPU query control tried to import CuPy')
+                raise AssertionError('CPU query reference tried to import CuPy')
             return original_import(name, *args, **kwargs)
 
         experiment = CudaExperiment(compile_circuit(parse_circuit('H 0\nT 0\nZ_ERROR(1/3) 0'),
@@ -69,25 +70,11 @@ assert not any(name.startswith('magna.cuda_') for name in sys.modules)
         frames = np.stack([experiment.base_frame, experiment.base_frame ^ experiment.columns[0]])
         with patch('builtins.__import__', side_effect=no_cupy):
             queries = GpuQueries(experiment)
-            result = queries.cpu_evaluate(frames)
+            result = cpu_evaluate(queries, frames)
         self.assertIsNone(queries._cp)
         self.assertIsNone(queries._plans)
-        self.assertEqual(result.tuples(), ((((1, 0, 0, 0), 0), ((1, 0, 0, 0), 0)),
+        self.assertEqual(tuples(result), ((((1, 0, 0, 0), 0), ((1, 0, 0, 0), 0)),
                                            (((1, 0, 0, 0), 0), ((0, 0, 0, 0), 0))))
-
-    def test_float_view_checks_status_by_default(self):
-        coefficients = np.array([[[1, 0, 0, 0]]], dtype=np.int64)
-        powers = np.zeros((1, 1), dtype=np.int32)
-        good = ExactQueryResult(coefficients, powers, np.zeros((1, 1), dtype=np.int32))
-        np.testing.assert_array_equal(good.values(), [[1.]])
-        for flag in (1, 2, 3):
-            bad = ExactQueryResult(coefficients, powers, np.array([[flag]], dtype=np.int32))
-            with self.subTest(flag=flag):
-                with self.assertRaisesRegex(ValueError, 'rejected frames'):
-                    bad.values()
-                with self.assertRaisesRegex(ValueError, 'rejected frames'):
-                    bad.to_host()
-                np.testing.assert_array_equal(bad.values(check=False), [[1.]])
 
     def test_pending_options_edits_are_rejected_before_cpu_or_gpu_access(self):
         compiled = compile_circuit(parse_circuit('H 0\nT 0'), ideal_state=parse_circuit('H 0\nT 0'))
@@ -95,7 +82,7 @@ assert not any(name.startswith('magna.cuda_') for name in sys.modules)
         query = GpuQueries(experiment)
         compiled.options['max_quotient_rank'] = 0
         with self.assertRaisesRegex(ValueError, 'options changed'):
-            query.cpu_evaluate(experiment.base_frame[None, :])
+            cpu_evaluate(query, experiment.base_frame[None, :])
         # The failure must occur before lazy import or a device argument check.
         with self.assertRaisesRegex(ValueError, 'options changed'):
             query.evaluate(None)
@@ -145,8 +132,8 @@ assert not any(name.startswith('magna.cuda_') for name in sys.modules)
                                                            ideal_state=parse_circuit('H 0\nT 0')))
                 query = GpuQueries(experiment)
                 modes.update(p['mode'] for p in query.metadata)
-                batch = experiment.draw([rng.getrandbits(64) for _ in range(12)])
-                physical = experiment.cpu_frames(batch)
+                batch = draw(experiment, [rng.getrandbits(64) for _ in range(12)])
+                physical = cpu_frames(experiment, batch)
                 raw = np.zeros((20, experiment.width), dtype=np.uint64)
                 bits = experiment.metadata['frame_bits']
                 for row in raw:
@@ -155,8 +142,8 @@ assert not any(name.startswith('magna.cuda_') for name in sys.modules)
                             live = min(64, max(0, bits-64*word))
                             row[axis*experiment.words + word] = rng.getrandbits(live)
                 frames = np.concatenate([physical, raw])
-                actual = query.cpu_evaluate(frames).tuples()
-                original = experiment.evaluate_frames(frames)
+                actual = tuples(cpu_evaluate(query, frames))
+                original = evaluate_frames(experiment, frames)
                 norm = ExactScalar(*experiment.metadata['target_normalization'])
                 for values, expected in zip(actual, original, strict=True):
                     acceptance, target = map(lambda value: ExactScalar(*value), values)

@@ -7,11 +7,8 @@ Notable changes to magna, newest first.
 
 ### Added
 
-- An opt-in experimental CUDA sampler for supported fixed Pauli-noise tasks,
-  including homogeneous importance proposals with a complete native count-weight
-  table. Fused noise/frame sampling, certified exact conditional probability
-  queries and device-side statistics run on the GPU. The default CPU sampler
-  and its seeded results are unchanged; CUDA uses a separate Philox stream.
+- An experimental CUDA sampler, `magna.cuda_sampler.CudaSampler`, runs physical and importance sampling
+  of supported tasks on an NVIDIA GPU. Install it with `pip install ".[cuda12]"`.
 - The README explains how to cite magna.
 
 ## 0.2.0 (2026-10-26)

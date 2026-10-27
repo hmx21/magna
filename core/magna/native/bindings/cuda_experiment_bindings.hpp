@@ -63,7 +63,7 @@ void cuda_prepare_likelihood(CudaExperimentBinding& bridge) {
         return;
     }
     auto unsupported = []() {
-        throw std::invalid_argument("CUDA importance sampling requires one complete native homogeneous count table");
+        throw std::invalid_argument("CUDA importance sampling requires 2 to 512 scaled noise locations, all with the same error probability");
     };
     if(noise.count_weights.size() != 1 || noise.count_groups.size() != noise.categories.size() ||
             noise.factor_groups.size() != noise.categories.size()) unsupported();
@@ -104,10 +104,10 @@ PyObject* make_cuda_experiment(PyObject*, PyObject* cap) {
         CompiledExperiment::ExclusiveUse use(run);
         native_work([&]() {
             if(run.needs_history() || run.nonlinear() || !run.source.guarded_ids.empty() || run.noise.guarded)
-                throw std::invalid_argument("CUDA experiment requires a fixed circuit without sampled histories, callbacks or guarded noise");
+                throw std::invalid_argument("CUDA sampler does not support decoder calls, conditional noise or sampled records");
             cuda_prepare_likelihood(*bridge);
             if(!run.task.boundaries.observables.empty())
-                throw std::invalid_argument("CUDA experiment currently exports acceptance and target error only");
+                throw std::invalid_argument("CUDA sampler does not support observables");
             if(!run.complete) run.prepare();
             bridge->engine = run.plans.get(run.source.stage("recovery"));
             if(run.source.target) {
