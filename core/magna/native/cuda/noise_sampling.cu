@@ -48,15 +48,14 @@ extern "C" __global__ void fused_noise(
         const u32* choice_offsets, const u32* choices, const unsigned char* uniform,
         const u64* conditional_thresholds, const unsigned char* conditional_certain,
         const unsigned char* weighted_sites, const double* likelihood_table,
-        u64* frames, u32* actions, double* likelihoods,
-        u64 shots, u64 seed, u64 offset, u32 width, u32 blocks, u32 sites, int record, int weighted) {
+        u64* frames, double* likelihoods,
+        u64 shots, u64 seed, u64 offset, u32 width, u32 blocks, int weighted) {
     u64 shot = (u64)blockDim.x * blockIdx.x + threadIdx.x;
     if (shot >= shots) return;
     Philox rng(offset + shot, seed);
     u32 weight_count = 0;
     u64* frame = frames + shot * width;
     for (u32 word = 0; word < width; ++word) frame[word] = base[word];
-    if (record) for (u32 site = 0; site < sites; ++site) actions[shot * sites + site] = 0xffffffffU;
     for (u32 block = 0; block < blocks; ++block) {
         u32 first = block_offsets[block], count = block_offsets[block + 1] - first;
         u64 selected = 0;
@@ -69,7 +68,6 @@ extern "C" __global__ void fused_noise(
                                     conditional_thresholds, conditional_certain);
                 const u64* column = columns + (u64)action * width;
                 for (u32 word = 0; word < width; ++word) frame[word] ^= column[word];
-                if (record) actions[shot * sites + site] = action;
                 if (weighted) weight_count += weighted_sites[site];
             }
             continue;
@@ -95,15 +93,8 @@ extern "C" __global__ void fused_noise(
                                 conditional_thresholds, conditional_certain);
             const u64* column = columns + (u64)action * width;
             for (u32 word = 0; word < width; ++word) frame[word] ^= column[word];
-            if (record) actions[shot * sites + site] = action;
             if (weighted) weight_count += weighted_sites[site];
         }
     }
     if (weighted) likelihoods[shot] = likelihood_table[weight_count];
-}
-extern "C" __global__ void philox_words(u64* output, u64 shots, u32 words, u64 seed, u64 offset) {
-    u64 shot = (u64)blockDim.x * blockIdx.x + threadIdx.x;
-    if (shot >= shots) return;
-    Philox rng(shot + offset, seed);
-    for (u32 j = 0; j < words; ++j) output[shot * words + j] = rng.next();
 }

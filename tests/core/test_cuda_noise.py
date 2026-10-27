@@ -12,9 +12,8 @@ except ImportError:
 from magna import compile_circuit, parse_circuit
 from magna._cuda_experiment import CudaExperiment
 from magna._cuda_noise import FusedCudaNoise, MASK64
-from tests.support.cuda_reference import (MASK32, PhiloxStream, actions_to_noise, cpu_frames, cpu_sample,
-                                          evaluate_frames, evaluate_noise, oracle_sample, philox4x32,
-                                          rng_words)
+from tests.support.cuda_reference import (MASK32, PhiloxStream, cpu_frames, cpu_sample, evaluate_frames,
+                                          evaluate_noise, noise_to_actions, oracle_sample, philox4x32)
 
 
 def sampler(text, **kwargs):
@@ -86,44 +85,27 @@ class FusedNoiseCpuTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'reconfigured'):
             cpu_sample(sample, 1, 0)
 
-    def test_diagnostic_actions_must_match_their_site_columns(self):
-        sample = sampler('X_ERROR(1/4) 0\nZ_ERROR(1/4) 1')
-        with self.assertRaisesRegex(ValueError, 'site column'):
-            actions_to_noise(sample, np.array([[1, MASK32]], dtype=np.uint32))
-
-
 class FusedNoiseGpuTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cp = require_cuda()
 
-    def test_rng_words_and_chunk_independence_above_32bits(self):
+    def test_chunk_independence_above_32bits(self):
         sample = sampler('X_ERROR(1/4) 0')
         seed, offset = MASK64 - 9, 2**32 - 3
-        words = rng_words(sample, 11, 7, seed, offset=offset).get()
-        expected = []
-        for shot in range(offset, offset + 11):
-            rng = PhiloxStream(seed, shot)
-            expected.append([rng() for _ in range(7)])
-        np.testing.assert_array_equal(words, np.array(expected, dtype=np.uint64))
-        kat = rng_words(sample, 1, 2, 0).get()[0]
-        np.testing.assert_array_equal(kat, np.array([0xE169C58D6627E8D5, 0x9B00DBD8BC57AC4C], dtype=np.uint64))
-        all_frames, all_actions = sample.sample(271, seed, offset=offset, return_actions=True)
+        all_frames = sample.sample(271, seed, offset=offset)
         left, right = sample.sample(17, seed, offset=offset), sample.sample(254, seed, offset=offset + 17)
         np.testing.assert_array_equal(all_frames.get(), sample.cp.concatenate([left, right]).get())
-        cpu, noise = cpu_sample(sample, 271, seed, offset=offset, return_noise=True)
-        np.testing.assert_array_equal(all_frames.get(), cpu)
-        actual = actions_to_noise(sample, all_actions)
-        np.testing.assert_array_equal(actual.offsets, noise.offsets)
-        np.testing.assert_array_equal(actual.indices, noise.indices)
+        np.testing.assert_array_equal(all_frames.get(), cpu_sample(sample, 271, seed, offset=offset))
 
     def test_exact_uint64_occurrence_boundary_on_device(self):
+        # The first Philox word of (seed 0, shot 0) is the Random123 known answer.
         word = 0xE169C58D6627E8D5
         for threshold, expected in ((word, 0), (word + 1, 1)):
             sample = sampler(f'X_ERROR({threshold}/{1 << 64}) 0')
-            frames, actions = sample.sample(1, 0, return_actions=True)
-            self.assertEqual(actions_to_noise(sample, actions).indices.size, expected)
-            np.testing.assert_array_equal(frames.get(), cpu_sample(sample, 1, 0))
+            frames = sample.sample(1, 0).get()
+            self.assertEqual(not np.array_equal(frames[0], sample.experiment.base_frame), bool(expected))
+            np.testing.assert_array_equal(frames, cpu_sample(sample, 1, 0))
 
     def test_gpu_frame_and_original_exact_true_t_probabilities(self):
         text = ('H 0\nT 0\nX_ERROR(0) 0\nZ_ERROR(1) 0\n'
@@ -132,14 +114,11 @@ class FusedNoiseGpuTests(unittest.TestCase):
                 'M(1/4) 1\nCX rec[-1] 0\n')
         text += '\n'.join(f'Z_ERROR(1/4) {q}' for q in range(137))
         sample = sampler(text, task={'outputs': [0]}, ideal_state=parse_circuit('H 0\nT 0'))
-        frames, actions = sample.sample(265, 84612, return_actions=True)
+        frames = sample.sample(265, 84612)
         cpu, noise = cpu_sample(sample, 265, 84612, return_noise=True)
         np.testing.assert_array_equal(frames.get(), cpu)
-        actual = actions_to_noise(sample, actions)
-        np.testing.assert_array_equal(actual.offsets, noise.offsets)
-        np.testing.assert_array_equal(actual.indices, noise.indices)
         plan = sample.experiment
-        self.assertEqual(evaluate_frames(plan, frames.get()), evaluate_noise(plan, actual))
+        self.assertEqual(evaluate_frames(plan, frames.get()), evaluate_noise(plan, noise))
 
     def test_marginals_exclusivity_cross_block_and_cross_shot_independence(self):
         sample = sampler('\n'.join(f'X_ERROR(1/4) {q}' for q in range(131)) +
@@ -147,8 +126,10 @@ class FusedNoiseGpuTests(unittest.TestCase):
                          'CORRELATED_ERROR(1/4) X0 Y1\nELSE_CORRELATED_ERROR(1/3) Z0 X1\n'
                          'X_ERROR(0) 0\nZ_ERROR(1) 0')
         shots = 65536
-        _, device_actions = sample.sample(shots, 268104, return_actions=True)
-        actions = device_actions.get()
+        frames = sample.sample(shots, 268104)
+        cpu, noise = cpu_sample(sample, shots, 268104, return_noise=True)
+        np.testing.assert_array_equal(frames.get(), cpu)
+        actions = noise_to_actions(sample, noise)
         present = actions != MASK32
         def check(count, probability, n=shots):
             self.assertLess(abs(count - n * probability), 7 * math.sqrt(n * probability * (1 - probability)) + 1)
@@ -170,10 +151,8 @@ class FusedNoiseGpuTests(unittest.TestCase):
     def test_zero_shots_and_no_noise_on_gpu(self):
         sample = sampler('H 0\nT 0', ideal_state=parse_circuit('H 0\nT 0'))
         self.assertEqual(sample.sample(0, 0).shape, (0, sample.width))
-        frames, actions = sample.sample(5, 0, return_actions=True)
-        self.assertEqual(actions.shape, (5, 0))
+        frames = sample.sample(5, 0)
         np.testing.assert_array_equal(frames.get(), cpu_sample(sample, 5, 0))
-        self.assertEqual(actions_to_noise(sample, actions).indices.size, 0)
 
 
 if __name__ == '__main__':

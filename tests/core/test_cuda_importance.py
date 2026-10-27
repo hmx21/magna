@@ -13,8 +13,8 @@ except ImportError:
 from magna import compile_circuit, parse_circuit
 from magna._cuda_experiment import CudaExperiment
 from magna._cuda_noise import FusedCudaNoise
-from tests.support.cuda_reference import (actions_to_noise, cpu_sample, cpu_sample_weighted, draw,
-                                          evaluate_frames, evaluate_noise, oracle_sample, weights_for_noise)
+from tests.support.cuda_reference import (cpu_sample, cpu_sample_weighted, draw, evaluate_frames,
+                                          evaluate_noise, oracle_sample, weights_for_noise)
 
 
 def resource_noise(count=14, *, scale=None, endpoints=False):
@@ -41,18 +41,12 @@ class ImportanceNoiseCpuTests(unittest.TestCase):
                 noise = resource_noise(count)
                 self.assertTrue(noise.has_importance_weights)
                 self.assertEqual(int(noise.weighted_sites.sum()), count)
-                self.assertEqual(len(noise.metadata['likelihood_exact']), count+1)
+                self.assertEqual(len(noise.likelihood_values), count+1)
                 q = Fraction(2, count)
                 threshold = int(q*(1 << 64))
                 self.assertTrue(np.all(noise.tables['thresholds'] == threshold))
-                for faults, ratio in enumerate(noise.metadata['likelihood_exact']):
-                    independent = expected_weight(count, faults, p, q)
-                    self.assertEqual(Fraction(*ratio), independent)
-                    self.assertEqual(noise.likelihood_values[faults], float(independent))
-                np.testing.assert_array_equal(
-                    np.ldexp(np.frombuffer(noise.metadata['likelihood_mantissas'], dtype='<f8'),
-                             np.frombuffer(noise.metadata['likelihood_exponents'], dtype='<i4')),
-                    noise.likelihood_values)
+                for faults, value in enumerate(noise.likelihood_values):
+                    self.assertEqual(value, float(expected_weight(count, faults, p, q)))
 
     def test_matches_public_native_sampler_exact_likelihoods(self):
         noise = resource_noise(14)
@@ -132,7 +126,7 @@ class ImportanceNoiseGpuTests(unittest.TestCase):
     def setUpClass(cls):
         cls.cp = require_cuda()
 
-    def test_fused_weighted_frames_actions_and_exact_native_oracle(self):
+    def test_fused_weighted_frames_and_exact_native_oracle(self):
         # A nonuniform categorical law, report noise, zero and certain sites.
         text = ('H 0\nT 0\nX_ERROR(0) 0\nZ_ERROR(1) 0\n'
                 'PAULI_CHANNEL_1(1/16,3/16,0) 0\n'
@@ -140,14 +134,11 @@ class ImportanceNoiseGpuTests(unittest.TestCase):
         noise = FusedCudaNoise(CudaExperiment(compile_circuit(parse_circuit(text),
             ideal_state=parse_circuit('H 0\nT 0'),
             sampling={'method':'importance','proposal_scale':'2'})))
-        frames, weights, actions = noise.sample_weighted(257, 2971, offset=2**32-129, return_actions=True)
-        cpu_frames, cpu_weights, cpu_batch = cpu_sample_weighted(noise, 257, 2971,
+        frames, weights = noise.sample_weighted(257, 2971, offset=2**32-129)
+        cpu_frames, cpu_weights, batch = cpu_sample_weighted(noise, 257, 2971,
             offset=2**32-129, return_noise=True)
-        batch = actions_to_noise(noise, actions)
         np.testing.assert_array_equal(frames.get(), cpu_frames)
         np.testing.assert_array_equal(weights.get(), cpu_weights)
-        np.testing.assert_array_equal(batch.offsets, cpu_batch.offsets)
-        np.testing.assert_array_equal(batch.indices, cpu_batch.indices)
         np.testing.assert_array_equal(cpu_weights, weights_for_noise(noise, batch))
         self.assertGreater(float(cpu_weights.max()), 1.)
         self.assertEqual(evaluate_frames(noise.experiment, cpu_frames), evaluate_noise(noise.experiment, batch))

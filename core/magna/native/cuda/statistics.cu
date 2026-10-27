@@ -5,6 +5,19 @@ __device__ u64 magnitude(i64 value) {
     return value < 0 ? (u64)(-(value + 1)) + 1 : (u64)value;
 }
 __device__ bool zero4(const i64* c) { return !(c[0] || c[1] || c[2] || c[3]); }
+// |a*a - 2*b*b| for int64 a and b, exact in 128 bits and then rounded to double.
+// The sign is returned in sign.
+__device__ double norm_difference(i64 a, i64 b, int& sign) {
+    u64 x = magnitude(a), y = magnitude(b);
+    u64 xl = x*x, xh = __umul64hi(x, x);
+    u64 yl = y*y, yh = __umul64hi(y, y);
+    yh = (yh << 1) | (yl >> 63); yl <<= 1;
+    if (xh == yh && xl == yl) { sign = 0; return 0.; }
+    sign = (xh > yh || (xh == yh && xl > yl)) ? 1 : -1;
+    if (sign < 0) { u64 t = xh; xh = yh; yh = t; t = xl; xl = yl; yl = t; }
+    u64 lo = xl - yl, hi = xh - yh - (xl < yl);
+    return ldexp((double)hi, 64) + (double)lo;
+}
 __device__ void check_nonnegative_real(const i64* c, unsigned int& status) {
     const u64 safe = (1ULL << 61)-1;
     for (int j=0;j<4;++j) if (magnitude(c[j]) > safe) { status |= 2; return; }
@@ -12,21 +25,21 @@ __device__ void check_nonnegative_real(const i64* c, unsigned int& status) {
     i64 a=c[0], b=c[1];
     if (a >= 0 && b >= 0) return;
     if (a <= 0 && b <= 0) { status |= 4; return; }
-    if (magnitude(a)>2147483647ULL || magnitude(b)>2147483647ULL) { status |= 2; return; }
-    i64 delta=a*a-2*b*b;
-    if ((a>0 && delta<0) || (a<0 && delta>0)) status |= 4;
+    int sign;
+    norm_difference(a, b, sign);
+    if ((a>0 && sign<0) || (a<0 && sign>0)) status |= 4;
 }
 __device__ double real_scalar(const i64* c, int power, unsigned int& status) {
-    const u64 bound = 2147483647ULL;
-    for (int j = 0; j < 4; ++j)
-        if (magnitude(c[j]) > bound) { status |= 2; return 0.; }
     if (c[2] || c[1] != -c[3]) { status |= 1; return 0.; }
     i64 a = c[0], b = c[1];
     double value;
     if ((a < 0 && b > 0) || (a > 0 && b < 0)) {
-        // Exact int64 numerator avoids cancellation in a + b*sqrt(2).
-        i64 numerator = a*a - 2*b*b;
-        value = (double)numerator / ((double)a - (double)b * 1.4142135623730950488);
+        // a + b*sqrt(2) = (a*a - 2*b*b) / (a - b*sqrt(2)) avoids cancellation;
+        // the denominator adds two numbers of the same sign.
+        int sign;
+        double numerator = norm_difference(a, b, sign);
+        double denominator = (double)magnitude(a) + (double)magnitude(b) * 1.4142135623730950488;
+        value = (a > 0 ? sign : -sign) * (numerator / denominator);
     } else value = (double)a + (double)b * 1.4142135623730950488;
     double result = ldexp(value, power);
     if (!isfinite(result) || (value != 0. && result == 0.)) status |= 8;
@@ -67,7 +80,7 @@ extern "C" __global__ void scalar_moments(
         const i64* coefficients, const int* powers, const int* query_flags,
         const double* likelihoods, int weighted, u64 shots,
         int queries, int norm_power, double* partial, unsigned int* flags) {
-    __shared__ double sums[10][128];
+    __shared__ double sums[5][128];
     __shared__ u64 counts[128];
     unsigned tid = threadIdx.x;
     u64 shot = (u64)blockIdx.x * blockDim.x + tid;
@@ -101,7 +114,7 @@ extern "C" __global__ void scalar_moments(
         if (a < 0. || e < 0. || a > 1.+1e-13 || e > a+1e-13) status |= 4;
         if (weighted) {
             double w=likelihoods[shot], old_a=a, old_e=e;
-            // With <=2^53 attempted draws, this bounds raw squared sums below 2^1014.
+            // Bounds weighted values so that their squares and centered sums stay finite.
             if (!isfinite(w) || w<0. || w>ldexp(1.,480)) status |= 32;
             a*=w; e*=w;
             if (!isfinite(a) || !isfinite(e) || !isfinite(a*a) || !isfinite(e*e) ||
@@ -110,55 +123,51 @@ extern "C" __global__ void scalar_moments(
         if ((a != 0. && a*a == 0.) || (e != 0. && e*e == 0.)) status |= 8;
     }
     if (status) atomicOr(flags, status);
+    // Each draw starts as mean (a, e) with a zero covariance factor.
     sums[0][tid] = a; sums[1][tid] = e;
-    sums[2][tid] = a*a; sums[3][tid] = e*e; sums[4][tid] = a*e;
-    sums[5][tid] = a; sums[6][tid] = e;
-    sums[7][tid] = 0.; sums[8][tid] = 0.; sums[9][tid] = 0.;
+    sums[2][tid] = 0.; sums[3][tid] = 0.; sums[4][tid] = 0.;
     counts[tid] = shot < shots ? 1 : 0;
     __syncthreads();
     for (unsigned step = 64; step; step >>= 1) {
         if (tid < step) {
-            for (int k=0;k<5;++k) sums[k][tid] += sums[k][tid+step];
             double left[5],right[5];
-            for(int k=0;k<5;++k) {left[k]=sums[k+5][tid];right[k]=sums[k+5][tid+step];}
+            for(int k=0;k<5;++k) {left[k]=sums[k][tid];right[k]=sums[k][tid+step];}
             u64 count=counts[tid];
             merge_centered(count,left,counts[tid+step],right);
             counts[tid]=count;
-            for(int k=0;k<5;++k) sums[k+5][tid]=left[k];
+            for(int k=0;k<5;++k) sums[k][tid]=left[k];
         }
         __syncthreads();
     }
-    if (!tid) for (int k=0;k<10;++k) partial[(u64)blockIdx.x*10+k]=sums[k][0];
+    if (!tid) for (int k=0;k<5;++k) partial[(u64)blockIdx.x*5+k]=sums[k][0];
 }
 extern "C" __global__ void finish_moments(
         const double* partial, u64 blocks, u64 shots, const unsigned int* flags, double* output) {
-    __shared__ double sums[10][128];
+    __shared__ double sums[5][128];
     __shared__ u64 counts[128];
     unsigned tid=threadIdx.x;
-    double raw[5]={0.,0.,0.,0.,0.}, state[5]={0.,0.,0.,0.,0.};
+    double state[5]={0.,0.,0.,0.,0.};
     u64 count=0;
     for(u64 block=tid;block<blocks;block+=128) {
-        for(int k=0;k<5;++k) raw[k]+=partial[block*10+k];
         u64 remaining=shots-block*128, block_count=remaining<128?remaining:128;
-        merge_centered(count,state,block_count,partial+block*10+5);
+        merge_centered(count,state,block_count,partial+block*5);
     }
-    for(int k=0;k<5;++k) {sums[k][tid]=raw[k];sums[k+5][tid]=state[k];}
+    for(int k=0;k<5;++k) sums[k][tid]=state[k];
     counts[tid]=count;
     __syncthreads();
     for (unsigned step=64;step;step>>=1) {
         if(tid<step) {
-            for(int k=0;k<5;++k) sums[k][tid]+=sums[k][tid+step];
             double left[5],right[5];
-            for(int k=0;k<5;++k) {left[k]=sums[k+5][tid];right[k]=sums[k+5][tid+step];}
+            for(int k=0;k<5;++k) {left[k]=sums[k][tid];right[k]=sums[k][tid+step];}
             u64 n=counts[tid];
             merge_centered(n,left,counts[tid+step],right);
             counts[tid]=n;
-            for(int k=0;k<5;++k) sums[k+5][tid]=left[k];
+            for(int k=0;k<5;++k) sums[k][tid]=left[k];
         }
         __syncthreads();
     }
     if(!tid) {
-        for(int k=0;k<10;++k) output[k]=sums[k][0];
-        output[10]=(double)(*flags);
+        for(int k=0;k<5;++k) output[k]=sums[k][0];
+        output[5]=(double)(*flags);
     }
 }

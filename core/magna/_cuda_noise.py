@@ -41,9 +41,7 @@ class FusedCudaNoise:
 
     ``sample(shots, seed, offset=0)`` is asynchronous and returns a CuPy uint64
     array shaped ``(shots, experiment.width)``. It can feed the GPU query kernel
-    directly. Requesting ``return_actions`` additionally allocates a diagnostic
-    uint32 array ``(shots, sites)`` (UINT32_MAX means no error) for tests.
-    Diagnostic arrays are limited to 512 MiB.
+    directly.
     """
     _types = dict(thresholds='<u8', certain='u1', block_offsets='<u4', block_sites='<u4',
                   choice_offsets='<u4', choices='<u4', uniform='u1',
@@ -75,7 +73,6 @@ class FusedCudaNoise:
             self._likelihood_values = cp.asarray(self.likelihood_values)
             module = cp.RawModule(code=_SOURCE, options=('--std=c++11',))
             self._kernel = module.get_function('fused_noise')
-            self._dummy = cp.empty(1, dtype=cp.uint32)
             self._dummy_weights = cp.empty(1, dtype=cp.float64)
         return self._cp
 
@@ -86,39 +83,32 @@ class FusedCudaNoise:
             raise ValueError('noise batch exceeds the native shot limit')
         if shots and offset > MASK64 - (shots - 1):
             raise ValueError('global shot ID overflows uint64')
-        self.experiment.validate()
         return shots, seed, offset
 
-    def sample(self, shots, seed, *, offset=0, return_actions=False):
+    def sample(self, shots, seed, *, offset=0):
         """Enqueue device noise/frames; does not synchronize or copy to host."""
         if self.has_importance_weights:
             raise ValueError('importance draws require sample_weighted so likelihoods are not discarded')
-        return self._sample(shots, seed, offset=offset, return_actions=return_actions, weighted=False)
+        return self._sample(shots, seed, offset, weighted=False)
 
-    def sample_weighted(self, shots, seed, *, offset=0, return_actions=False):
-        """Return device ``(frames, likelihoods[, actions])`` without a host transfer.
+    def sample_weighted(self, shots, seed, *, offset=0):
+        """Return device ``(frames, likelihoods)`` without a host transfer.
 
         The float64 likelihood is the native count table's rounded exact
         target/proposal ratio. It is not a probability and can exceed one.
         Physical/no-op proposals return unit weights.
         """
-        return self._sample(shots, seed, offset=offset, return_actions=return_actions, weighted=True)
+        return self._sample(shots, seed, offset, weighted=True)
 
-    def _sample(self, shots, seed, *, offset, return_actions, weighted):
+    def _sample(self, shots, seed, offset, *, weighted):
         shots, seed, offset = self._arguments(shots, seed, offset)
-        if return_actions and shots * self.sites * 4 > 512 * 1024**2:
-            raise ValueError('diagnostic action array exceeds 512 MiB; validate in smaller chunks')
         cp = self.cp
         frames = cp.empty((shots, self.width), dtype=cp.uint64)
-        actions = cp.empty((shots, self.sites), dtype=cp.uint32) if return_actions else self._dummy
         likelihoods = cp.empty(shots, dtype=cp.float64) if weighted else self._dummy_weights
         if shots:
             args = (self._columns, self._base, *(self._tables[k] for k in self._types),
-                    self._weighted_sites, self._likelihood_values, frames, actions, likelihoods,
+                    self._weighted_sites, self._likelihood_values, frames, likelihoods,
                     np.uint64(shots), np.uint64(seed), np.uint64(offset),
-                    np.uint32(self.width), np.uint32(self.blocks), np.uint32(self.sites),
-                    np.int32(bool(return_actions)), np.int32(weighted))
+                    np.uint32(self.width), np.uint32(self.blocks), np.int32(weighted))
             self._kernel(((shots + 127) // 128,), (128,), args)
-        if weighted:
-            return (frames, likelihoods, actions) if return_actions else (frames, likelihoods)
-        return (frames, actions) if return_actions else frames
+        return (frames, likelihoods) if weighted else frames

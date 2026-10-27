@@ -62,7 +62,8 @@ class WeightedGpuStatisticsTests(unittest.TestCase):
         c,p=exact_arrays([1,Fraction(1,2),0,Fraction(1,4)]*65,
                          [Fraction(1,2),Fraction(1,4),0,Fraction(1,8)]*65)
         w=np.array([2.,.25,4.,0.]*65)
-        exact=SimpleNamespace(coefficients=self.cp.asarray(c),powers=self.cp.asarray(p))
+        exact=SimpleNamespace(coefficients=self.cp.asarray(c),powers=self.cp.asarray(p),
+                              status=self.cp.zeros(p.shape,dtype=self.cp.int32))
         gpu=self.fake()._gpu_moments(exact,self.cp.asarray(w))
         cpu=cpu_moments(c,p,0,w)
         assert_moments_close(gpu,cpu,rtol=1e-14)
@@ -73,12 +74,11 @@ class WeightedGpuStatisticsTests(unittest.TestCase):
 
     def test_gpu_invalid_weights_are_rejected(self):
         c,p=exact_arrays([Fraction(1,2)],[Fraction(1,4)])
-        exact=SimpleNamespace(coefficients=self.cp.asarray(c),powers=self.cp.asarray(p))
+        exact=SimpleNamespace(coefficients=self.cp.asarray(c),powers=self.cp.asarray(p),
+                              status=self.cp.zeros(p.shape,dtype=self.cp.int32))
         for weights in ([-1.],[np.nan],[np.inf],[1e308],[2.**481],[2.**-1074]):
             with self.subTest(weights=weights),self.assertRaises(ValueError):
                 self.fake()._gpu_moments(exact,self.cp.asarray(weights,dtype=self.cp.float64))
-        with self.assertRaises(ValueError):
-            self.fake()._gpu_moments(exact,np.array([1.]))
 
     def test_paper_bh2_complete_sampler_matches_same_philox_cpu(self):
         from pathlib import Path

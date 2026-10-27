@@ -67,7 +67,6 @@ class GpuQueries:
     def cp(self):
         """Upload and compile device plans on first use."""
         if self._cp is None:
-            self.experiment.validate()
             import cupy as cp
             plans = []
             for raw, host in self._host_plans:
@@ -90,17 +89,9 @@ class GpuQueries:
         return self._cp
 
     def evaluate(self, device_frames):
-        # This shared validator checks the immutable protocol and target handles.
-        # It performs no per-shot probability work and never transfers GPU data.
-        self.experiment.validate()
+        """Evaluate every query on device frames from ``FusedCudaNoise``."""
         cp = self.cp
-        if not isinstance(device_frames, cp.ndarray) or device_frames.dtype != cp.uint64:
-            raise TypeError('device frames must be a CuPy uint64 array')
-        if device_frames.ndim != 2 or device_frames.shape[1] != self.experiment.width or not device_frames.flags.c_contiguous:
-            raise ValueError('device frame shape/layout differs from the experiment')
         shots = device_frames.shape[0]
-        if shots > self.experiment.metadata['max_shots']:
-            raise ValueError('CUDA query batch exceeds shot limit')
         coefficients = cp.empty((shots, self.query_count, 4), dtype=cp.int64)
         powers = cp.empty((shots, self.query_count), dtype=cp.int32)
         status = cp.empty((shots, self.query_count), dtype=cp.int32)

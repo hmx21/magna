@@ -9,9 +9,8 @@ import math
 import numpy as np
 
 from magna import _native
-from magna._cuda_noise import MASK64, _uint64
+from magna._cuda_noise import MASK64
 from magna._cuda_queries import ExactQueryResult
-from magna._cuda_source import _read_cuda_source
 from magna.cuda_sampler import _MAX_LIKELIHOOD, _Moments, _merge_moments, _summarize_moments
 
 MASK32 = (1 << 32) - 1
@@ -220,22 +219,13 @@ def weights_for_noise(noise, batch):
     return noise.likelihood_values[counts.astype(np.intp)]
 
 
-def actions_to_noise(noise, actions):
-    """Copy diagnostic actions if necessary and reconstruct sparse draws."""
-    if hasattr(actions, 'get'):
-        actions = actions.get()
-    actions = np.asarray(actions)
-    if actions.ndim != 2 or actions.shape[1] != noise.sites or actions.dtype != np.uint32:
-        raise ValueError('expected uint32 diagnostic action array with one column per site')
-    selected = actions != MASK32
-    counts = selected.sum(axis=1, dtype=np.uint64)
-    offsets = np.concatenate([np.zeros(1, dtype=np.uint64), np.cumsum(counts, dtype=np.uint64)])
-    indices = np.ascontiguousarray(actions[selected], dtype=np.uint32)
-    batch = NoiseBatch(noise.experiment, offsets, indices)
-    _csr(noise.experiment, batch)
-    if indices.size and not np.array_equal(action_sites(noise.experiment)[indices], np.nonzero(selected)[1]):
-        raise ValueError('diagnostic action ID does not belong to its site column')
-    return batch
+def noise_to_actions(noise, batch):
+    """Dense ``(shots, sites)`` action IDs of a noise batch; MASK32 means no error."""
+    offsets, indices = _csr(noise.experiment, batch)
+    actions = np.full((batch.shots, noise.sites), MASK32, dtype=np.uint32)
+    shots = np.repeat(np.arange(batch.shots), np.diff(offsets).astype(np.intp))
+    actions[shots, action_sites(noise.experiment)[indices]] = indices
+    return actions
 
 
 def oracle_sample(noise, shots, seed, *, offset=0):
@@ -303,22 +293,6 @@ def oracle_sample(noise, shots, seed, *, offset=0):
                               np.asarray(indices, dtype=np.uint32))
 
 
-def rng_words(noise, shots, words, seed, *, offset=0):
-    """Device Philox stream from the ``philox_words`` test kernel."""
-    shots, seed, offset = noise._arguments(shots, seed, offset)
-    words = _uint64(words, 'words')
-    if words > 1024:
-        raise ValueError('diagnostic word count exceeds 1024')
-    cp = noise.cp
-    kernel = cp.RawModule(code=_read_cuda_source('noise_sampling.cu'),
-                          options=('--std=c++11',)).get_function('philox_words')
-    result = cp.empty((shots, words), dtype=cp.uint64)
-    if shots and words:
-        kernel(((shots + 127) // 128,), (128,),
-               (result, np.uint64(shots), np.uint32(words), np.uint64(seed), np.uint64(offset)))
-    return result
-
-
 # Exact queries.
 
 def check_status(result):
@@ -345,8 +319,8 @@ def tuples(result):
 def evaluate_host(queries, frames):
     queries.experiment.validate()
     values = np.asarray(frames)
-    if values.dtype != np.uint64 or values.ndim != 2:
-        raise ValueError('host frames must be uint64[shots,words]')
+    if values.dtype != np.uint64 or values.ndim != 2 or values.shape[1] != queries.experiment.width:
+        raise ValueError('host frames must match the compiled uint64 frame shape')
     return to_host(queries.evaluate(queries.cp.asarray(np.ascontiguousarray(values))))
 
 
@@ -364,11 +338,14 @@ def cpu_evaluate(queries, frames):
 
 # Statistics.
 
+def _norm_difference(a, b):
+    """Exact ``a*a - 2*b*b`` as Python integers."""
+    return np.array([int(x)*int(x) - 2*int(y)*int(y) for x, y in zip(a, b)], dtype=object)
+
+
 def _real_values(coefficients, powers):
-    """Vectorized CPU equivalent of the bounded, stable real conversion."""
+    """Vectorized CPU equivalent of the stable real conversion."""
     c = np.asarray(coefficients, dtype=np.int64)
-    if np.any(c < -2147483647) or np.any(c > 2147483647):
-        raise ValueError('statistics coefficient exceeds signed 31-bit conversion bound')
     if np.any(c[..., 2] != 0) or np.any(c[..., 1] != -c[..., 3]):
         raise ValueError('statistics require real cyclotomic probabilities')
     a, b = c[..., 0], c[..., 1]
@@ -376,8 +353,8 @@ def _real_values(coefficients, powers):
     opposite = ((a < 0) & (b > 0)) | ((a > 0) & (b < 0))
     if np.any(opposite):
         aa, bb = a[opposite], b[opposite]
-        value[opposite] = (aa*aa - 2*bb*bb).astype(np.float64) / (
-            aa.astype(np.float64) - bb.astype(np.float64)*math.sqrt(2))
+        numerator = np.array([float(x) for x in _norm_difference(aa, bb)])
+        value[opposite] = numerator / (aa.astype(np.float64) - bb.astype(np.float64)*math.sqrt(2))
     with np.errstate(over='ignore', under='ignore'):
         result = np.ldexp(value, powers)
     if np.any(~np.isfinite(result)) or np.any((value != 0) & (result == 0)):
@@ -409,10 +386,8 @@ def contributions(coefficients, powers, norm_power, weights=None):
             raise ValueError('query result has a negative target probability')
         opposite = ((ta < 0) & (tb > 0)) | ((ta > 0) & (tb < 0))
         if np.any(opposite):
-            x, y = ta[opposite], tb[opposite]
-            if np.any(np.abs(x) > 2147483647) or np.any(np.abs(y) > 2147483647):
-                raise ValueError('target sign exceeds the exact statistics bound')
-            delta = x*x-2*y*y
+            x = ta[opposite]
+            delta = _norm_difference(x, tb[opposite])
             if np.any(((x > 0) & (delta < 0)) | ((x < 0) & (delta > 0))):
                 raise ValueError('query result has a negative target probability')
         pa, pt = p[:, 0].copy(), p[:, 1] - norm_power

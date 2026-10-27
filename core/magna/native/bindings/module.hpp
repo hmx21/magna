@@ -45,6 +45,7 @@
 #include "../runtime/noise_layout.hpp"
 #include "../runtime/sampling.hpp"
 #include "../runtime/low_weight.hpp"
+#include "../runtime/cuda_plan.hpp"
 using namespace magic_native;
 namespace {
 struct Object {

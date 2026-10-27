@@ -2,7 +2,7 @@
 
 Compilation stays in magna. Philox noise, Pauli-frame accumulation, exact
 conditional probabilities and batch statistics run on the device; each chunk
-copies eleven numbers back to the host. Each chunk's statistics are a mean and
+copies six numbers back to the host. Each chunk's statistics are a mean and
 a centered covariance factor, merged on the host without subtracting raw
 moments, so a small variance is not lost to cancellation.
 
@@ -48,7 +48,7 @@ _EMPTY = _Moments(0, np.zeros(2), np.zeros(3))
 def _fma(a, b, c):
     if hasattr(math, 'fma'):
         return math.fma(a, b, c)
-    # Python 3.10-3.12 lack math.fma. This exact host fallback is used only
+    # Python 3.11-3.12 lack math.fma. This exact host fallback is used only
     # for a few covariance-factor operations per batch, never per shot.
     from fractions import Fraction
     return float(Fraction(a)*Fraction(b)+Fraction(c))
@@ -136,24 +136,10 @@ class CudaSampler:
     def _gpu_moments(self, exact, weights=None):
         cp = self._noise.cp
         c, p = exact.coefficients, exact.powers
-        if c.ndim != 3 or c.shape[2] != 4 or c.shape[1] not in (1, 2) or p.shape != c.shape[:2]:
-            raise ValueError('invalid exact GPU query result shape')
-        if c.dtype != cp.int64 or p.dtype != cp.int32 or not c.flags.c_contiguous or not p.flags.c_contiguous:
-            raise ValueError('GPU query arrays must be contiguous int64 coefficients and int32 powers')
-        query_flags = getattr(exact, 'status', None)
-        if query_flags is None:
-            query_flags = cp.zeros(p.shape, dtype=cp.int32)
-        if query_flags.dtype != cp.int32 or query_flags.shape != p.shape or not query_flags.flags.c_contiguous:
-            raise ValueError('GPU query status must be contiguous int32 with one flag per query')
-        if weights is not None:
-            if (not isinstance(weights, cp.ndarray) or weights.dtype != cp.float64 or
-                    weights.shape != (c.shape[0],) or not weights.flags.c_contiguous):
-                raise ValueError('device likelihoods must be contiguous float64[shots]')
-            likelihoods = weights
-        else:
+        if weights is None:
             if self._unit_weights is None:
                 self._unit_weights = cp.empty(1, dtype=cp.float64)
-            likelihoods = self._unit_weights
+            weights = self._unit_weights
         if not c.shape[0]:
             return _EMPTY
         if self._statistics_module is None:
@@ -161,19 +147,30 @@ class CudaSampler:
         first = self._statistics_module.get_function('scalar_moments')
         finish = self._statistics_module.get_function('finish_moments')
         blocks = (c.shape[0]+127)//128
-        partial = cp.empty((blocks, 10), dtype=cp.float64)
+        partial = cp.empty((blocks, 5), dtype=cp.float64)
         flags = cp.zeros(1, dtype=cp.uint32)
-        output = cp.empty(11, dtype=cp.float64)
-        first((blocks,), (128,), (c, p, query_flags, likelihoods, np.int32(weights is not None),
+        output = cp.empty(6, dtype=cp.float64)
+        first((blocks,), (128,), (c, p, exact.status, weights, np.int32(weights is not self._unit_weights),
                                   np.uint64(c.shape[0]), np.int32(c.shape[1]),
                                   np.int32(self._norm_power), partial, flags))
         finish((1,), (128,), (partial, np.uint64(blocks), np.uint64(c.shape[0]), flags, output))
-        # output: five raw sums (unused here), two means, three factor entries, flags.
+        # output: two means, three factor entries, flags.
         host = output.get()
-        if host[10]:
-            raise ValueError(f'GPU probability summary rejected values (flags={int(host[10])}: '
+        if host[5]:
+            raise ValueError(f'GPU probability summary rejected values (flags={int(host[5])}: '
                              '1=nonreal, 2=integer bound, 4=probability bound, 8=float range, 16=query contract, 32=likelihood)')
-        return _Moments(c.shape[0], host[5:7], host[7:10])
+        return _Moments(c.shape[0], host[0:2], host[2:5])
+
+    def _chunks(self, shots, seed, offset, batch_size):
+        """Statistics of each chunk, produced as it finishes so memory stays constant."""
+        for first in range(0, shots, batch_size):
+            size = min(batch_size, shots-first)
+            weights = None
+            if self._noise.has_importance_weights:
+                frames, weights = self._noise.sample_weighted(size, seed, offset=offset+first)
+            else:
+                frames = self._noise.sample(size, seed, offset=offset+first)
+            yield self._gpu_moments(self._queries.evaluate(frames), weights)
 
     def run(self, shots, *, seed=0, offset=0, batch_size=65536):
         """Attempt ``shots`` draws in chunks of at most ``batch_size``.
@@ -193,17 +190,7 @@ class CudaSampler:
         if shots > (1 << 53):
             raise ValueError('summary shot count exceeds exact float64 count range')
         start = perf_counter()
-        chunks = []
-        weighted = self._noise.has_importance_weights
-        for first in range(0, shots, batch_size):
-            size = min(batch_size, shots-first)
-            weights = None
-            if weighted:
-                frames, weights = self._noise.sample_weighted(size, seed, offset=offset+first)
-            else:
-                frames = self._noise.sample(size, seed, offset=offset+first)
-            chunks.append(self._gpu_moments(self._queries.evaluate(frames), weights))
-        totals = _merge_moments(chunks)
+        totals = _merge_moments(self._chunks(shots, seed, offset, batch_size))
         return dict(status='complete', requested=shots, completed=shots,
                     seed=seed, offset=offset, batch_size=batch_size,
                     timings=dict(sampling_seconds=perf_counter()-start),

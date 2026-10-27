@@ -75,7 +75,6 @@ def invalid_cases():
         item([[[-1, 0, 0, 0]]], [[0]]),
         item([[[1, 0, 1, 0]]], [[-2]]),
         item([[[0, 1, 0, 0]]], [[-2]]),
-        item([[[1 << 31, 0, 0, 0]]], [[-31]]),
         item([[[1, 0, 0, 0]]], [[1024]]),
         item([[[1, 0, 0, 0]]], [[-1075]]),
         # Probability survives float64 but its squared moment does not.
@@ -85,6 +84,31 @@ def invalid_cases():
         item([[[1, 0, 0, 0], [1, 0, 0, 0]]], [[-1, 0]]),
         item([[[1, 0, 0, 0], [-1, 0, 0, 0]]], [[-30, -60]]),
     ]
+
+
+def pell(bits):
+    """x, y with x*x - 2*y*y = 1 and x above 2**bits."""
+    x, y = 3, 2
+    while x < 1 << bits:
+        x, y = 3*x + 4*y, 2*x + 3*y
+    return x, y
+
+
+def large_gap_cases():
+    """Exact values whose aligned coefficients exceed 2**31."""
+    x, y = pell(50)
+    with localcontext() as context:
+        context.prec = 90
+        tiny = Decimal(1) / (Decimal(x) + Decimal(y)*Decimal(2).sqrt())
+        cases = [
+            # Acceptance 1/2 with fidelity mass 2**-36.
+            ([[1, 0, 0, 0], [1, 0, 0, 0]], [-1, -36], [0.5, 0.5 - 2.**-36]),
+            # Acceptance x - y*sqrt(2) = 1/(x + y*sqrt(2)).
+            ([[x, -y, 0, y]], [0], [float(tiny)]),
+            # Acceptance 1/2 with fidelity mass x - y*sqrt(2).
+            ([[1, 0, 0, 0], [x, -y, 0, y]], [-1, 0], [0.5, float(Decimal(1)/2 - tiny)]),
+        ]
+    return [(np.array([c], dtype=np.int64), np.array([p], dtype=np.int32), np.array(v)) for c, p, v in cases]
 
 
 class CpuMomentTests(unittest.TestCase):
@@ -146,6 +170,11 @@ class CpuMomentTests(unittest.TestCase):
         self.assertTrue(all(0 < v < 1e-8 for v in values))
         np.testing.assert_allclose(cpu_moments(c, p, 0).mean, independent_means(values, [0, 0]),
                                    rtol=3e-15, atol=0)
+
+    def test_large_exponent_gap_converts_exactly(self):
+        for i, (c, p, expected) in enumerate(large_gap_cases()):
+            with self.subTest(case=i):
+                np.testing.assert_allclose(cpu_moments(c, p, 0).mean[:len(expected)], expected, rtol=3e-15, atol=0)
 
     def test_nonunit_target_and_paired_delta_method(self):
         a = [Fraction(1, 2), Fraction(1), Fraction(1, 4), Fraction(0)]
@@ -213,7 +242,8 @@ class GpuMomentTests(unittest.TestCase):
         return obj
 
     def gpu(self, c, p, norm_power=0):
-        exact = SimpleNamespace(coefficients=self.cp.asarray(c), powers=self.cp.asarray(p))
+        exact = SimpleNamespace(coefficients=self.cp.asarray(c), powers=self.cp.asarray(p),
+                                status=self.cp.zeros(p.shape, dtype=self.cp.int32))
         return self.fake_sampler(norm_power)._gpu_moments(exact)
 
     def test_gpu_constant_irrational_and_near_constant_variance(self):
@@ -263,19 +293,17 @@ class GpuMomentTests(unittest.TestCase):
             values = [float(Decimal(a) + Decimal(b)*Decimal(2).sqrt()) for a, b in pairs]
         np.testing.assert_allclose(self.gpu(c, p).mean, independent_means(values, [0, 0]), rtol=3e-15, atol=0)
 
-    def test_gpu_zero_shots_and_dtype_shape_contract(self):
+    def test_gpu_large_exponent_gap_converts_exactly(self):
+        for i, (c, p, expected) in enumerate(large_gap_cases()):
+            with self.subTest(case=i):
+                np.testing.assert_allclose(self.gpu(c, p).mean[:len(expected)], expected, rtol=3e-15, atol=0)
+
+    def test_gpu_zero_shots(self):
         c, p = exact_arrays([])
         self.assertEqual(self.gpu(c, p).count, 0)
         run = self.fake_sampler().run(0, seed=123, batch_size=7)
         self.assertEqual(run['completed'], 0)
         self.assertIsNone(run['estimates']['acceptance'])
-        c, p = exact_arrays([Fraction(1, 2)])
-        with self.assertRaises(ValueError):
-            self.gpu(c.astype(np.float64), p)
-        with self.assertRaises(ValueError):
-            self.gpu(c, p.astype(np.int64))
-        with self.assertRaises(ValueError):
-            self.gpu(np.zeros((1, 3, 4), dtype=np.int64), np.zeros((1, 3), dtype=np.int32))
 
     def test_gpu_rejects_invalid_scalar_ranges_and_probabilities(self):
         for i, (c, p) in enumerate(invalid_cases()):

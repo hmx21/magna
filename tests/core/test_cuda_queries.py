@@ -13,6 +13,7 @@ except ImportError:
 from magna import compile_circuit, parse_circuit
 from magna._cuda_experiment import CudaExperiment
 from magna._cuda_queries import GpuQueries
+from magna.cuda_sampler import CudaSampler
 from magna.scalar import ExactScalar
 from tests.support.cuda_reference import (check_status, cpu_evaluate, cpu_frames, draw, evaluate_frames,
                                           evaluate_host, evaluate_noise, tuples)
@@ -140,19 +141,15 @@ class ExactGpuQueryTests(unittest.TestCase):
             evaluate_host(query, invalid)
         with self.assertRaises(ValueError):
             cpu_evaluate(query, invalid)
-        with self.assertRaises(TypeError):
-            query.evaluate(self.cp.zeros((1, experiment.width), dtype=self.cp.float64))
 
     def test_reconfigured_plan_is_rejected_before_gpu_launch(self):
-        experiment = CudaExperiment(compile_circuit(parse_circuit('H 0\nT 0'), ideal_state=parse_circuit('H 0\nT 0')))
-        query = GpuQueries(experiment)
-        frames = self.cp.asarray(experiment.base_frame[None, :])
-        options = dict(experiment.compiled.options, max_quotient_rank=0)
-        experiment.compiled._execution.configure(options)
+        compiled = compile_circuit(parse_circuit('H 0\nT 0'), ideal_state=parse_circuit('H 0\nT 0'))
+        sampler = CudaSampler(compiled)
+        compiled._execution.configure(dict(compiled.options, max_quotient_rank=0))
         with self.assertRaisesRegex(ValueError, 'reconfigured'):
-            query.evaluate(frames)
+            sampler.run(1)
         with self.assertRaisesRegex(ValueError, 'reconfigured'):
-            cpu_evaluate(query, experiment.base_frame[None, :])
+            cpu_evaluate(sampler._queries, sampler._experiment.base_frame[None, :])
 
     def test_zero_dimensional_empty_and_unmeasured_queries(self):
         for circuit in ('', 'R 0'):

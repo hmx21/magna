@@ -62,8 +62,10 @@ Use a sampler from one thread at a time.
 
 The CUDA sampler supports a task when:
 
-- it has no [decoder calls](controllers.md), no [conditional noise](noise.md#conditional-noise),
-  no sampled records and no observables;
+- it samples no measurement history: `compilation.sampled_history` in the
+  [inspect report](sampling.md#history-samplers) is false. Decoder calls,
+  [conditional noise](noise.md#conditional-noise) and `sample_records` all sample a history;
+- it has no observables;
 - it uses physical sampling, or importance sampling in which every scaled noise location
   has the same total error probability and there are between 2 and 512 of them.
   A noise location is one target qubit or qubit pair of a noise instruction, one correlated-error chain,

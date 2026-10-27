@@ -15,6 +15,7 @@ except ImportError:
 from magna import _native, compile_circuit, parse_circuit
 from magna._cuda_experiment import CudaExperiment
 from magna._cuda_queries import GpuQueries
+from magna.cuda_sampler import CudaSampler
 from magna.scalar import ExactScalar
 from tests.support.cuda_reference import cpu_evaluate, cpu_frames, draw, evaluate_frames, tuples
 
@@ -83,9 +84,11 @@ assert not any(name.startswith(('magna.cuda_', 'magna._cuda_')) for name in sys.
         compiled.options['max_quotient_rank'] = 0
         with self.assertRaisesRegex(ValueError, 'options changed'):
             cpu_evaluate(query, experiment.base_frame[None, :])
-        # The failure must occur before lazy import or a device argument check.
+        # The failure must occur before CuPy is imported.
+        sampler = CudaSampler.__new__(CudaSampler)
+        sampler._experiment, sampler._queries = experiment, query
         with self.assertRaisesRegex(ValueError, 'options changed'):
-            query.evaluate(None)
+            sampler.run(1)
         with self.assertRaisesRegex(ValueError, 'options changed'):
             GpuQueries(experiment)
         self.assertIsNone(query._cp)
