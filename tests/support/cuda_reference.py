@@ -508,3 +508,27 @@ def history_scientific_rows(coefficients, powers, norm_power=0, proposal_rank=No
             rows.append((scientific(acceptance*weight/divisor),
                          scientific((acceptance-target)*weight/divisor) if c.shape[1] == 3 else (0., 0)))
     return rows
+
+
+def history_draw(experiment, handle, metadata, seed, shot):
+    """Exact addressed history with the original ControllerBinding.invoke calls."""
+    inputs, outputs = [], []
+    compiled = experiment.compiled
+    for site in metadata['sites']:
+        row = _native.cuda_history_replay(handle, seed, shot, tuple(inputs), tuple(outputs))
+        controls = (compiled._control_metadata if site['stage'] == 'protocol'
+                    else compiled._recovery_control_metadata)
+        instruction, binding, _, _ = controls.callbacks[site['index']]
+        result = binding.invoke(tuple(row), site['output_count'], source=instruction.source)
+        inputs.append(row)
+        outputs.append(bytes(result))
+    return inputs, outputs, _native._cuda_history_cpu_reference(handle, seed, shot, tuple(outputs))
+
+
+def history_affine_value(raw, packed):
+    """Independent integer-parity reference for schedule and cap affine rows."""
+    values = np.frombuffer(packed, dtype='<u8')
+    rows = np.frombuffer(raw['rows'], dtype='<u8').reshape(raw['count'], len(values))
+    constants = np.frombuffer(raw['constants'], dtype='u1')
+    return bytes(int(constant) ^ (sum((int(a)&int(b)).bit_count() for a, b in zip(row, values)) & 1)
+                 for row, constant in zip(rows, constants))

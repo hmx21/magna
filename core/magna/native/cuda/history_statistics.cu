@@ -43,7 +43,7 @@ __device__ bool difference(const i64* a, i64 pa, const i64* b, i64 pb, i64* out,
 }
 __device__ bool contribution(const i64* c,const int* p,int queries,i64 norm_power,
                              bool affine,i64 rank,double weight,double* value,i64* exponent) {
-    if(queries<2 || queries>3 || rank<0 || rank>(1LL<<50) ||
+    if(queries<2 || queries>3 || rank<-(1LL<<50) || rank>(1LL<<50) ||
        norm_power<-(1LL<<50) || norm_power>(1LL<<50) || !isfinite(weight) || weight<0.) return false;
     double pm,am,em=0.,tm,unused; i64 pe,ae,ee=0,te,up;
     if(!real_value(c,p[0],pm,pe) || !real_value(c+4,p[1],am,ae)) return false;

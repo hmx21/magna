@@ -45,6 +45,21 @@ def fraction_summary(rows):
 
 
 class HistoryStatisticsCpuTests(unittest.TestCase):
+    def test_tiny_likelihood_is_scaled_before_target_normalization(self):
+        from magna._cuda_history import _CudaHistory
+        history = _CudaHistory.__new__(_CudaHistory)
+        history._cp = np
+        history.proposal = True
+        history.normalization = (1.25, -1)
+        ranks, weights = history._statistics_inputs(np.array([0, 1074], dtype=np.int64),
+            np.array([2.**-1074, 2.**-1074]))
+        np.testing.assert_array_equal(ranks, [-1072, 2])
+        np.testing.assert_array_equal(weights, [.4, .4])
+        c, p = arrays([[scalar(5, -3), scalar(5, -3)]]*2)
+        rows = history_scientific_rows(c, p, proposal_rank=ranks, likelihood=weights)
+        for row, expected in zip(rows, (2.**-1074, 1.)):
+            self.assertEqual(_summarize_scaled(_scientific_moments([row]), False)['estimates']['acceptance'], expected)
+
     def test_proposal_and_conditional_normalization(self):
         c, p = arrays([[scalar(1, -3), scalar(1, -4), scalar(1, -6)]])
         exact = history_scientific_rows(c, p, -1)
@@ -127,6 +142,20 @@ class HistoryStatisticsGpuTests(unittest.TestCase):
             result = _summarize_scaled(actual)
             self.assertEqual(result['estimates'], dict(acceptance=.5, error=.25, conditional_error=.5))
             self.assertEqual(result['standard_errors'], dict(acceptance=0., error=0., conditional_error=0.))
+
+    def test_signed_likelihood_scale_preserves_subnormal_weight(self):
+        from magna._cuda_history import _CudaHistory
+        history = _CudaHistory.__new__(_CudaHistory)
+        history._cp = self.cp
+        history.proposal = True
+        history.normalization = (1.25, -1)
+        for rank, expected in ((0, 2.**-1074), (1074, 1.)):
+            ranks, weights = history._statistics_inputs(self.cp.asarray([rank], dtype=self.cp.int64),
+                self.cp.asarray([2.**-1074]))
+            c, p = arrays([[scalar(5, -3), scalar(5, -3)]])
+            actual, flags = self.reduce(c, p, ranks=ranks, likelihood=weights)
+            np.testing.assert_array_equal(flags, 0)
+            self.assertEqual(_summarize_scaled(actual, False)['estimates']['acceptance'], expected)
 
     def test_exact_error_and_pell_cancellation(self):
         x, y = 3, 2
