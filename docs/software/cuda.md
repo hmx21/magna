@@ -61,6 +61,8 @@ Use a sampler from one thread at a time.
 Tasks with registered Python decoders use the same `controllers` argument to `compile_circuit`.
 The decoders run on the CPU. Select `affine_support` or `exact_marginal` through
 the compilation option `history_sampler`, as described in [History samplers](sampling.md#history-samplers).
+On the machine above, `exact_marginal` was slower on the GPU for `tqd3`–`tqd5`;
+use `run` for that configuration when sampling time is the priority.
 
 ## Supported tasks
 
